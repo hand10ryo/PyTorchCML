@@ -51,3 +51,23 @@ class CollaborativeMetricLearning(nn.Module):
         prod = torch.einsum("nid,md->nm", pos_i_emb, neg_i_emb)
 
         return prod
+
+    def predict(self, pairs: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            pairs : tensor of indices for user and item pairs size (n_pairs, 2).
+        Returns:
+            dist : distance for each users and item pair size (n_batch, 1, 1)
+        """
+        # set users and user
+        users = pairs[:, :1]
+        items = pairs[:, 1:2]
+
+        # get enmbeddigs
+        u_emb = self.user_embedding(users)
+        i_emb = self.item_embedding(items)
+
+        # compute distance
+        dist = torch.cdist(u_emb, i_emb).reshape(-1)
+
+        return 2 - dist

@@ -4,6 +4,7 @@ import torch
 from torch import nn, optim
 from tqdm import tqdm
 from sklearn.metrics import ndcg_score, average_precision_score, recall_score
+from .models import CollaborativeMetricLearning as cml
 
 
 class UserwiseEvaluator:
@@ -48,7 +49,7 @@ class UserwiseEvaluator:
         else:
             return self.compute_score(y_test_user, y_hat_user)
 
-    def score(self, model, reduction="mean", verbose=True) -> pd.Series:
+    def score(self, model: cml, reduction="mean", verbose=True) -> pd.Series:
         """全ユーザーに対して評価値を計算して平均をとる"""
 
         users = torch.unique(self.test_set[:, 0])
