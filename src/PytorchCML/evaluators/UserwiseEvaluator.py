@@ -4,7 +4,7 @@ import torch
 from torch import nn, optim
 from tqdm import tqdm
 from sklearn.metrics import ndcg_score, average_precision_score, recall_score
-from .models import CollaborativeMetricLearning as cml
+from ..models import CollaborativeMetricLearning as cml
 
 
 class UserwiseEvaluator:
