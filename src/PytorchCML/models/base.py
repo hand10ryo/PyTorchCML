@@ -1,15 +1,17 @@
+from typing import Optional
+
 import torch
 from torch import nn
 
 
 class CollaborativeMetricLearning(nn.Module):
-    def __init__(self, n_user: int, n_item: int, n_dim: int = 20):
+    def __init__(self, n_user: int, n_item: int, n_dim: int = 20, max_norm: Optional[float] = 1):
         super().__init__()
         self.n_dim = n_dim
         self.user_embedding = nn.Embedding(
-            n_user, n_dim, sparse=False, max_norm=1)
+            n_user, n_dim, sparse=False, max_norm=max_norm)
         self.item_embedding = nn.Embedding(
-            n_item, n_dim, sparse=False, max_norm=1)
+            n_item, n_dim, sparse=False, max_norm=max_norm)
 
     def forward(self, users: torch.Tensor, items: torch.Tensor) -> torch.Tensor:
         """
