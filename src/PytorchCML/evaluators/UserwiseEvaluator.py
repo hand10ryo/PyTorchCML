@@ -18,22 +18,25 @@ class UserwiseEvaluator:
         self.score_function_dict = score_function_dict
         self.ks = ks
 
-        self.metrics_names = [f"{name}@{k}"
-                              for k in ks
-                              for name in score_function_dict.keys()
-                              ]
-
-        self.df_eval = pd.DataFrame({name: [] for name in self.metrics_names})
+        self.metrics_names = [
+            f"{name}@{k}"
+            for k in ks
+            for name in score_function_dict.keys()
+        ]
 
     def compute_score(self, y_test_user: np.ndarray, y_hat_user: np.ndarray):
 
-        df_eval_sub = pd.DataFrame({
-            f"{name}@{k}": [metric(y_test_user, y_hat_user, k)]
-            for k in self.ks
-            for name, metric in self.score_function_dict.items()
-        })
+        if y_test_user.sum() == 0:
+            return pd.DataFrame({name: [0] for name in self.metrics_names})
 
-        self.df_eval = pd.concat([self.df_eval, df_eval_sub])
+        else:
+            df_eval_sub = pd.DataFrame({
+                f"{name}@{k}": [metric(y_test_user, y_hat_user, k)]
+                for k in self.ks
+                for name, metric in self.score_function_dict.items()
+            })
+
+        return df_eval_sub
 
     def eval_user(self, model, uid: int):
         """user ごとに評価値を得る"""
@@ -43,29 +46,28 @@ class UserwiseEvaluator:
         y_hat_user = model.predict(test_set_pair).to("cpu").detach().numpy()
         y_test_user = self.test_set[user_indices, 2].to("cpu").detach().numpy()
 
-        if y_test_user.sum() == 0:
-            return 0
-
-        else:
-            return self.compute_score(y_test_user, y_hat_user)
+        return self.compute_score(y_test_user, y_hat_user)
 
     def score(self, model: cml, reduction="mean", verbose=True) -> pd.Series:
         """全ユーザーに対して評価値を計算して平均をとる"""
 
         users = torch.unique(self.test_set[:, 0])
+        df_eval = pd.DataFrame({name: [] for name in self.metrics_names})
 
         if verbose:
             for uid in tqdm(users):
-                self.eval_user(model, uid)
+                df_eval_sub = self.eval_user(model, uid)
+                df_eval = pd.concat([df_eval, df_eval_sub])
         else:
             for uid in users:
-                self.eval_user(model, uid)
+                df_eval_sub = self.eval_user(model, uid)
+                df_eval = pd.concat([df_eval, df_eval_sub])
 
         if reduction == "mean":
-            score = self.df_eval.mean(axis=0)
+            score = df_eval.mean(axis=0)
 
         else:
-            score = self.df_eval.copy()
+            score = df_eval.copy()
 
         return score
 
