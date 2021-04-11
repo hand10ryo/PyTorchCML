@@ -12,7 +12,7 @@ class MinTripletLoss(BaseTripletLoss):
         """
         Args:
             pos_dist : distance of pos pairs of size (n_batch, 1, 1)
-            neg_dist : distance of pos pairs of size (n_neg_samples)
+            neg_dist : distance of pos pairs of size (n_batch, 1, n_neg_samples)
             weight : sample weight
         """
         min_neg_dist = torch.min(neg_dist, axis=2)

@@ -5,17 +5,31 @@ from torch import nn
 
 
 class BaseEmbeddingModel(nn.Module):
-    def __init__(self, n_user: int, n_item: int, n_dim: int = 20, max_norm: Optional[float] = 1):
+    def __init__(self, n_user: int, n_item: int, n_dim: int = 20, max_norm: Optional[float] = 1,
+                 user_embedding_init: Optional[torch.Tensor] = None,
+                 item_embedding_init: Optional[torch.Tensor] = None):
         super().__init__()
         self.n_user = n_user
         self.n_item = n_item
         self.n_dim = n_dim
         self.max_norm = max_norm
 
-        self.user_embedding = nn.Embedding(
-            n_user, n_dim, sparse=False, max_norm=max_norm)
-        self.item_embedding = nn.Embedding(
-            n_item, n_dim, sparse=False, max_norm=max_norm)
+        if user_embedding_init is None:
+            self.user_embedding = nn.Embedding(
+                n_user, n_dim, sparse=False, max_norm=max_norm)
+
+        else:
+            self.user_embedding = nn.Embedding.from_pretrained(
+                user_embedding_init)
+            self.user_embedding.weight.requires_grad = True
+
+        if item_embedding_init is None:
+            self.item_embedding = nn.Embedding(
+                n_item, n_dim, sparse=False, max_norm=max_norm)
+        else:
+            self.item_embedding = nn.Embedding.from_pretrained(
+                item_embedding_init)
+            self.item_embedding.weight.requires_grad = True
 
     def forward(self, users: torch.Tensor, items: torch.Tensor) -> torch.Tensor:
         raise NotImplementedError

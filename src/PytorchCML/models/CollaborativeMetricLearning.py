@@ -29,7 +29,7 @@ class CollaborativeMetricLearning(BaseEmbeddingModel):
         i_emb = self.item_embedding(items)  # batch_size × n_samples × dim
 
         # compute distance
-        dist = torch.cdist(u_emb, i_emb)  # batch_size × n_samples × 1
+        dist = torch.cdist(u_emb, i_emb)  # batch_size × 1 ×　n_samples
 
         return dist
 
@@ -54,7 +54,7 @@ class CollaborativeMetricLearning(BaseEmbeddingModel):
         Args:
             pairs : tensor of indices for user and item pairs size (n_pairs, 2).
         Returns:
-            dist : distance for each users and item pair size (n_batch, 1, 1)
+            dist : distance for each users and item pair size (n_pairs)
         """
         # set users and user
         users = pairs[:, :1]

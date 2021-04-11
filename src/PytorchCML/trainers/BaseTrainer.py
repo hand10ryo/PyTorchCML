@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -7,7 +7,7 @@ from torch import nn, optim
 from tqdm import tqdm
 
 from ..evaluators import BaseEvaluator
-from ..losses import BaseTripletLoss
+from ..losses import BasePairwiseLoss, BaseTripletLoss
 from ..models import BaseEmbeddingModel
 from ..samplers import BaseSampler
 
@@ -16,7 +16,7 @@ class BaseTrainer:
     def __init__(self,
                  model: BaseEmbeddingModel,
                  optimizer: optim,
-                 criterion: BaseTripletLoss,
+                 criterion: Union[BasePairwiseLoss, BaseTripletLoss],
                  sampler: BaseSampler):
         self.model = model
         self.optimizer = optimizer
