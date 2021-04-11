@@ -82,8 +82,14 @@ def ndcg(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
 
 
 def average_precision(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
+    pred_sort_indices = (-y_hat_user).argsort()
+    topk_y_hat = y_hat_user[pred_sort_indices[:k]]
+    topk_y_test = y_test_user[pred_sort_indices[:k]]
 
-    return average_precision_score(y_test_user, y_hat_user)
+    if topk_y_test.sum() < 1:
+        return 0
+    else:
+        return average_precision_score(topk_y_test, topk_y_hat)
 
 
 def recall(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
