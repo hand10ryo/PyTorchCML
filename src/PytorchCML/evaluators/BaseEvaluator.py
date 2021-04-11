@@ -2,7 +2,7 @@
 import pandas as pd
 import torch
 
-from ..models import CollaborativeMetricLearning as cml
+from ..models import BaseEmbeddingModel
 
 
 class BaseEvaluator:
@@ -13,6 +13,6 @@ class BaseEvaluator:
         """
         self.test_set = test_set
 
-    def score(self, model: cml, verbose=True) -> pd.DataFrame:
+    def score(self, model: BaseEmbeddingModel, verbose=True) -> pd.DataFrame:
 
         raise NotImplementedError()

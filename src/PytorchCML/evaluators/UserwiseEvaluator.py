@@ -5,7 +5,7 @@ from sklearn.metrics import average_precision_score, ndcg_score, recall_score
 from torch import nn, optim
 from tqdm import tqdm
 
-from ..models import CollaborativeMetricLearning as cml
+from ..models import BaseEmbeddingModel
 from .BaseEvaluator import BaseEvaluator
 
 
@@ -13,7 +13,7 @@ class UserwiseEvaluator(BaseEvaluator):
     def __init__(self, test_set: torch.Tensor, score_function_dict: dict, ks: int = [5]):
         """
         Args:
-            model: cml model
+            model: BaseEmbeddingModel
             testdata: ndarray of shape (n_pairs, 3) which column is [user_id, item_id, rating]
         """
         super().__init__(test_set)
@@ -51,7 +51,7 @@ class UserwiseEvaluator(BaseEvaluator):
 
         return self.compute_score(y_test_user, y_hat_user)
 
-    def score(self, model: cml, reduction="mean", verbose=True) -> pd.DataFrame:
+    def score(self, model: BaseEmbeddingModel, reduction="mean", verbose=True) -> pd.DataFrame:
         """全ユーザーに対して評価値を計算して平均をとる"""
 
         users = torch.unique(self.test_set[:, 0])
