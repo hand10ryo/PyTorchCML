@@ -68,7 +68,7 @@ class CMLTrainer(BaseTrainer):
                     )
 
             # compute metrics for epoch
-            if valid_or_not and ((ep+1) % valid_per_epoch == 0) or (ep == n_epoch-1):
+            if valid_or_not and (((ep+1) % valid_per_epoch == 0) or (ep == n_epoch-1)):
                 valid_scores_sub = pd.DataFrame(
                     valid_evaluator.score(self.model)).T
                 valid_scores_sub["epoch"] = ep + 1
