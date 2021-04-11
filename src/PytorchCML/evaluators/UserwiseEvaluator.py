@@ -1,20 +1,23 @@
 import numpy as np
 import pandas as pd
 import torch
+from sklearn.metrics import average_precision_score, ndcg_score, recall_score
 from torch import nn, optim
 from tqdm import tqdm
-from sklearn.metrics import ndcg_score, average_precision_score, recall_score
+
 from ..models import CollaborativeMetricLearning as cml
+from .BaseEvaluator import BaseEvaluator
 
 
-class UserwiseEvaluator:
+class UserwiseEvaluator(BaseEvaluator):
     def __init__(self, test_set: torch.Tensor, score_function_dict: dict, ks: int = [5]):
         """
         Args:
             model: cml model
             testdata: ndarray of shape (n_pairs, 3) which column is [user_id, item_id, rating]
         """
-        self.test_set = test_set
+        super().__init__(test_set)
+
         self.score_function_dict = score_function_dict
         self.ks = ks
 
@@ -48,7 +51,7 @@ class UserwiseEvaluator:
 
         return self.compute_score(y_test_user, y_hat_user)
 
-    def score(self, model: cml, reduction="mean", verbose=True) -> pd.Series:
+    def score(self, model: cml, reduction="mean", verbose=True) -> pd.DataFrame:
         """全ユーザーに対して評価値を計算して平均をとる"""
 
         users = torch.unique(self.test_set[:, 0])
