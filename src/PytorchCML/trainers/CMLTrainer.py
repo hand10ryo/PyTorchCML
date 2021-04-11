@@ -40,7 +40,8 @@ class CMLTrainer(BaseTrainer):
                         neg_candidates = self.sampler.get_and_set_candidates()
                         dist = self.model.spreadout_distance(
                             pos_items, neg_candidates)
-                        self.sampler.set_candidates_weight(dist, model.n_dim)
+                        self.sampler.set_candidates_weight(
+                            dist, self.model.n_dim)
 
                     neg_items = self.sampler.get_neg_batch()
 
