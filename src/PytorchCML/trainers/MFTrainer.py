@@ -35,7 +35,7 @@ class MFTrainer(BaseTrainer):
                     batch = self.sampler.get_pos_batch()
                     users = batch[:, 0]
                     pos_items = batch[:, 1:]
-                    neg_items = self.sampler.get_neg_batch()
+                    neg_items = self.sampler.get_neg_batch(users)
 
                     # initialize gradient
                     self.model.zero_grad()
