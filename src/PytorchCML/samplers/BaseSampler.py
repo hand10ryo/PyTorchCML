@@ -85,7 +85,7 @@ class BaseSampler:
     def get_neg_batch(self, users: torch.Tensor) -> torch.Tensor:
 
         if self.strict_negative:
-            pos_item_mask = torch.Tensor(self.train_matrix[users].A)
+            pos_item_mask = torch.Tensor(self.train_matrix[users.to("cpu")].A)
             weight = torch.einsum(
                 "i,ni->ni",
                 self.neg_weight_item,
