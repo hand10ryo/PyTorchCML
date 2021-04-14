@@ -43,7 +43,7 @@ class CMLTrainer(BaseTrainer):
                         self.sampler.set_candidates_weight(
                             dist, self.model.n_dim)
 
-                    neg_items = self.sampler.get_neg_batch()
+                    neg_items = self.sampler.get_neg_batch(users.reshape(-1))
 
                     # initialize gradient
                     self.model.zero_grad()

@@ -3,21 +3,42 @@ from typing import Optional
 import numpy as np
 import torch
 from torch import nn
+from torch.distributions.categorical import Categorical
+from scipy.sparse import csr_matrix
 
 
 class BaseSampler:
     def __init__(self, train_set: np.ndarray,
+                 n_user: int = None, n_item: int = None,
                  pos_weight: Optional[np.ndarray] = None,
                  neg_weight: Optional[np.ndarray] = None,
                  device: Optional[torch.device] = None,
-                 batch_size: int = 256, n_neg_samples: int = 10):
+                 batch_size: int = 256, n_neg_samples: int = 10,
+                 strict_negative: bool = False):
 
         self.train_set = torch.LongTensor(train_set).to(device)
+        self.train_matrix = csr_matrix(
+            (np.ones(train_set.shape[0]), (train_set[:, 0], train_set[:, 1])),
+            [n_user, n_item]
+        )
+        """self.train_matrix = torch.sparse.FloatTensor(
+            self.train_set.T,
+            torch.ones(train_set.shape[0]),
+            torch.Size([n_user, n_item])
+        )"""
         self.n_neg_samples = n_neg_samples
         self.batch_size = batch_size
-        self.n_user = np.unique(train_set[:, 0]).shape[0]
-        self.n_item = np.unique(train_set[:, 1]).shape[0]
+        if n_user is None:
+            self.n_user = np.unique(train_set[:, 0]).shape[0]
+        else:
+            self.n_user = n_user
+
+        if n_user is None:
+            self.n_item = np.unique(train_set[:, 1]).shape[0]
+        else:
+            self.n_item = n_item
         self.device = device
+        self.strict_negative = strict_negative
         self.two_stage = False
 
         # device
@@ -42,24 +63,47 @@ class BaseSampler:
         else:  # uniform
             pos_weight_pair = torch.ones(train_set.shape[0])
 
-        self.pos_sampler = torch.distributions.categorical.Categorical(
-            probs=torch.Tensor(pos_weight_pair).to(device))
+        self.pos_weight_pair = torch.Tensor(pos_weight_pair).to(device)
+        self.pos_sampler = Categorical(probs=self.pos_weight_pair)
 
         # set neg weight
         if neg_weight is None:  # uniorm
-            neg_weight_item = np.ones(self.n_item) / self.n_item
+            neg_weight_item = np.ones(self.n_item)
         elif len(neg_weight) == self.n_item:  # weighted
             neg_weight_item = neg_weight
         else:
             raise NotImplementedError
 
-        self.neg_sampler = torch.distributions.categorical.Categorical(
-            probs=torch.Tensor(neg_weight_item).to(device))
+        self.neg_weight_item = torch.Tensor(neg_weight_item).to(device)
+        self.neg_sampler = Categorical(probs=self.neg_weight_item)
 
     def get_pos_batch(self) -> torch.Tensor:
         batch_indices = self.pos_sampler.sample([self.batch_size])
         batch = self.train_set[batch_indices]
         return batch
 
-    def get_neg_batch(self) -> torch.Tensor:
-        return self.neg_sampler.sample([self.batch_size, self.n_neg_samples])
+    def get_neg_batch(self, users: torch.Tensor) -> torch.Tensor:
+
+        if self.strict_negative:
+            pos_item_mask = torch.Tensor(self.train_matrix[users].A)
+            weight = torch.einsum(
+                "i,ni->ni",
+                self.neg_weight_item,
+                1 - pos_item_mask.to(self.device)
+            )
+            neg_sampler = Categorical(probs=weight)
+            neg_samples = neg_sampler.sample([self.n_neg_samples]).T
+            """neg_samples = torch.stack([
+                self.get_user_dist(u).sample([self.n_neg_samples])
+                for u in users
+            ])"""
+            return neg_samples
+
+        else:
+            return self.neg_sampler.sample([self.batch_size, self.n_neg_samples])
+
+    # def get_user_dist(self, user_id: int):
+    #    user_weight = torch.clone(self.neg_weight_item)
+    #    user_weight *= (1 - self.train_matrix[user_id].A)
+    #    dist = Categorical(probs=user_weight)
+    #    return dist
