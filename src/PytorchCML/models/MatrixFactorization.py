@@ -31,7 +31,8 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         else:
             self.user_bias = nn.Embedding.from_pretrained(
-                user_bias_init.reshape(-1, 1)
+                user_bias_init.reshape(-1, 1),
+                max_norm=max_bias
             )
             self.user_bias.weight.requires_grad = True
 
@@ -40,7 +41,8 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         else:
             self.item_bias = nn.Embedding.from_pretrained(
-                item_bias_init.reshape(-1, 1)
+                item_bias_init.reshape(-1, 1),
+                max_norm=max_bias
             )
             self.item_bias.weight.requires_grad = True
 
@@ -66,7 +68,8 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         # get bias
         u_bias = self.user_bias(users)  # batch_size × 1
-        i_bias = self.user_bias(users)  # batch_size × n_samples
+        i_bias = self.item_bias(items)  # batch_size × n_samples × 1
+        i_bias = i_bias.sum(axis=2)     # batch_size × n_samples
 
         # compute inner product
         inner = torch.einsum('nd,njd->nj', u_emb, i_emb)
@@ -85,21 +88,25 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         items = pairs[:, 1]
 
         # get enmbeddigs
-        u_emb = self.user_embedding(users)
-        i_emb = self.item_embedding(items)
+        u_emb = self.user_embedding(users)  # batch_size × dim
+        i_emb = self.item_embedding(items)  # batch_size × dim
+
+        # get bias
+        u_bias = self.user_bias(users)  # batch_size × 1
+        i_bias = self.item_bias(items)  # batch_size × 1
 
         # compute distance
         inner = torch.einsum('nd,nd->n', u_emb, i_emb)
 
-        return inner
+        return inner + u_bias.reshape(-1) + i_bias.reshape(-1)
 
     def predict_binary(self, pairs: torch.Tensor) -> torch.Tensor:
-        inner = self.predict(pairs)
-        sign = torch.sign(inner)
+        pred = self.predict(pairs)
+        sign = torch.sign(pred)
         binary = torch.uint8((sign + 1) / 2)
         return binary
 
     def predict_proba(self, pairs: torch.Tensor) -> torch.Tensor:
-        inner = self.predict(pairs)
-        proba = torch.sigmoid(inner)
+        pred = self.predict(pairs)
+        proba = torch.sigmoid(pred)
         return proba
