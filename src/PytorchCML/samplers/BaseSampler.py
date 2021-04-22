@@ -88,10 +88,6 @@ class BaseSampler:
             )
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
-            """neg_samples = torch.stack([
-                self.get_user_dist(u).sample([self.n_neg_samples])
-                for u in users
-            ])"""
             return neg_samples
 
         else:

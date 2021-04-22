@@ -14,6 +14,9 @@ class MinTripletLoss(BaseTripletLoss):
             pos_dist : distance of pos pairs of size (n_batch, 1, 1)
             neg_dist : distance of pos pairs of size (n_batch, 1, n_neg_samples)
             weight : sample weight
+
+        Return:
+            loss : L = Σ [m + pos_dist^2 - min(neg_dist)^2]
         """
         min_neg_dist = torch.min(neg_dist, axis=2)
         pairwiseloss = self.ReLU(
