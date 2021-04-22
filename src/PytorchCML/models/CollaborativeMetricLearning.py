@@ -67,4 +67,6 @@ class CollaborativeMetricLearning(BaseEmbeddingModel):
         # compute distance
         dist = torch.cdist(u_emb, i_emb).reshape(-1)
 
-        return self.max_norm * 2 - dist
+        max_dist = 2 * self.max_norm if self.max_norm is not None else 100
+
+        return max_dist - dist

@@ -21,11 +21,6 @@ class BaseSampler:
             (np.ones(train_set.shape[0]), (train_set[:, 0], train_set[:, 1])),
             [n_user, n_item]
         )
-        """self.train_matrix = torch.sparse.FloatTensor(
-            self.train_set.T,
-            torch.ones(train_set.shape[0]),
-            torch.Size([n_user, n_item])
-        )"""
         self.n_neg_samples = n_neg_samples
         self.batch_size = batch_size
         if n_user is None:
@@ -101,9 +96,3 @@ class BaseSampler:
 
         else:
             return self.neg_sampler.sample([self.batch_size, self.n_neg_samples])
-
-    # def get_user_dist(self, user_id: int):
-    #    user_weight = torch.clone(self.neg_weight_item)
-    #    user_weight *= (1 - self.train_matrix[user_id].A)
-    #    dist = Categorical(probs=user_weight)
-    #    return dist
