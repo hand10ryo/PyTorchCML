@@ -9,12 +9,28 @@ from scipy.sparse import csr_matrix
 
 class BaseSampler:
     def __init__(self, train_set: np.ndarray,
-                 n_user: int = None, n_item: int = None,
+                 n_user: Optional[int] = None, n_item: Optional[int] = None,
                  pos_weight: Optional[np.ndarray] = None,
                  neg_weight: Optional[np.ndarray] = None,
                  device: Optional[torch.device] = None,
                  batch_size: int = 256, n_neg_samples: int = 10,
                  strict_negative: bool = False):
+        """Class of Base Sampler for get positive and negative batch.
+        Args:
+            train_set (np.ndarray): [description]
+            n_user (Optional[int], optional): [description]. Defaults to None.
+            n_item (Optional[int], optional): [description]. Defaults to None.
+            pos_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
+            neg_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
+            device (Optional[torch.device], optional): [description]. Defaults to None.
+            batch_size (int, optional): [description]. Defaults to 256.
+            n_neg_samples (int, optional): [description]. Defaults to 10.
+            strict_negative (bool, optional): [description]. Defaults to False.
+
+        Raises:
+            NotImplementedError: [description]
+            NotImplementedError: [description]
+        """
 
         self.train_set = torch.LongTensor(train_set).to(device)
         self.train_matrix = csr_matrix(
@@ -73,11 +89,24 @@ class BaseSampler:
         self.neg_sampler = Categorical(probs=self.neg_weight_item)
 
     def get_pos_batch(self) -> torch.Tensor:
+        """ Method for positive sampling.
+
+        Returns:
+            torch.Tensor: positive batch.
+        """
         batch_indices = self.pos_sampler.sample([self.batch_size])
         batch = self.train_set[batch_indices]
         return batch
 
     def get_neg_batch(self, users: torch.Tensor) -> torch.Tensor:
+        """ Method of negative sampling
+
+        Args:
+            users (torch.Tensor): indices of users in pos pairs.
+
+        Returns:
+            torch.Tensor: negative samples.
+        """
 
         if self.strict_negative:
             pos_item_mask = torch.Tensor(self.train_matrix[users.to("cpu")].A)

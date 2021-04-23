@@ -7,6 +7,9 @@ from .BasePairwiseLoss import BasePairwiseLoss
 
 
 class LogitPairwiseLoss(BasePairwiseLoss):
+    """ Class of pairwise logit loss for Logistic Matrix Factorization 
+    """
+
     def __init__(self):
         super().__init__()
         self.LogSigmoid = nn.LogSigmoid()

@@ -13,11 +13,22 @@ from ..samplers import BaseSampler
 
 
 class BaseTrainer:
+    """ Class of abstract trainer for redommend system in implicit feedback setting.
+    """
+
     def __init__(self,
                  model: BaseEmbeddingModel,
                  optimizer: optim,
                  criterion: Union[BasePairwiseLoss, BaseTripletLoss],
                  sampler: BaseSampler):
+        """ Set components for learning recommend system.
+
+        Args:
+            model (BaseEmbeddingModel): embedding model
+            optimizer (optim): pytorch optimizer
+            criterion (Union[BasePairwiseLoss, BaseTripletLoss]): loss function
+            sampler (BaseSampler): sampler
+        """
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion

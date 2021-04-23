@@ -5,6 +5,9 @@ from .BaseTripletLoss import BaseTripletLoss
 
 
 class SumTripletLoss(BaseTripletLoss):
+    """ Class of Triplet Loss taking sum of negative sample.
+    """
+
     def __init__(self, margin: float = 1):
         super().__init__(margin)
 
