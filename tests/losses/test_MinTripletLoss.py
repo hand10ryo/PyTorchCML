@@ -11,17 +11,16 @@ class TestMinTripletLoss(unittest.TestCase):
     def test_forward(self):
         """
         test forward
-
-        pos_dist = [[3], [3]]
-        neg_dist = [[0,1,2], [3,4,5]]
-        loss = [[10], [1]]
-        avg_loss = 5.5
         """
         criterion = MinTripletLoss(margin=1)
-        pos_dist_data = torch.ones(2, 1, 1) * 3
-        neg_dist_data = torch.arange(6).reshape(2, 1, 3)
-        loss = criterion(pos_dist_data, neg_dist_data).item()
-        self.assertEqual(loss, 5.5)
+
+        user_emb = torch.ones(3, 1, 5)
+        pos_item_emb = torch.ones(3, 1, 5) * 2
+        neg_item_emb = torch.ones(3, 1, 5)
+
+        loss = criterion(user_emb, pos_item_emb, neg_item_emb).item()
+        self.assertGreater(loss, 0)
+        self.assertEqual(loss, 6)
 
 
 if __name__ == '__main__':

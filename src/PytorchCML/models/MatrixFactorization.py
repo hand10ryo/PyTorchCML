@@ -46,14 +46,14 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
             )
             self.item_bias.weight.requires_grad = True
 
-    def forward(self, users: torch.Tensor, items: torch.Tensor) -> torch.Tensor:
+    def forward(self, users: torch.Tensor,
+                pos_items: torch.Tensor,
+                neg_items: torch.Tensor) -> torch.Tensor:
         """
         Args:
             users : tensor of user indices size (n_batch). 
-            items : tensor of item indices 
-                   pos_pairs -> size (n_batch, 1), 
-                   neg_pairs -> size (n_batch, n_neg_samples)
-
+            pos_items : tensor of item indices size (n_batch, 1)
+            neg_items : tensor of item indices size (n_batch, n_neg_samples)
 
         Returns:
             inner : inner product for each users and item pair
@@ -64,17 +64,18 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         # get enmbeddigs
         u_emb = self.user_embedding(users)  # batch_size × dim
-        i_emb = self.item_embedding(items)  # batch_size × n_samples × dim
+        ip_emb = self.item_embedding(pos_items)  # batch_size × dim
+        in_emb = self.item_embedding(neg_items)  # batch_size × n_samples × dim
 
         # get bias
-        u_bias = self.user_bias(users)  # batch_size × 1
-        i_bias = self.item_bias(items)  # batch_size × n_samples × 1
-        i_bias = i_bias.sum(axis=2)     # batch_size × n_samples
+        ub = self.user_bias(users)  # batch_size × 1
+        ipb = self.item_bias(pos_items)  # batch_size × 1
+        inb = self.item_bias(neg_items)  # batch_size × n_samples × 1
 
         # compute inner product
-        inner = torch.einsum('nd,njd->nj', u_emb, i_emb)
+        # inner = torch.einsum('nd,njd->nj', u_emb, i_emb)
 
-        return inner + u_bias + i_bias
+        return u_emb, ip_emb, in_emb, ub, ipb, inb
 
     def predict(self, pairs: torch.Tensor) -> torch.Tensor:
         """

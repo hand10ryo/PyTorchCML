@@ -23,18 +23,22 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         avg_loss = 5.5
         """
         criterion = LogitPairwiseLoss()
-        pos_inner_data = torch.ones(2, 1) * 3
-        neg_inner_data = - torch.ones(2, 3) * 3
-        loss = criterion(pos_inner_data, neg_inner_data).item()
 
-        pos_loss = - np.log(sigmoid(
-            pos_inner_data.to("cpu").detach().numpy()
-        )).sum()
-        neg_loss = - np.log(sigmoid(
-            - neg_inner_data.to("cpu").detach().numpy()
-        )).sum()
-        loss_np = (pos_loss + neg_loss) / (2 * (1 + 3))
-        self.assertAlmostEqual(loss, loss_np)
+        user_emb = torch.ones(3, 5)
+        pos_item_emb = torch.ones(3, 5) * 2
+        neg_item_emb = torch.ones(3, 2, 5)
+
+        user_bias = torch.zeros(3, 1)
+        pos_item_bias = torch.zeros(3, 1) * 2
+        neg_item_bias = torch.zeros(3, 2, 1)
+
+        loss = criterion(
+            user_emb, pos_item_emb, neg_item_emb,
+            user_bias, pos_item_bias, neg_item_bias
+        ).item()
+
+        self.assertGreater(loss, 0)
+        self.assertAlmostEqual(loss, 3.3378, places=3)
 
 
 if __name__ == '__main__':

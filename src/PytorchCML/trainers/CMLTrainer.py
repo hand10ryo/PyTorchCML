@@ -48,13 +48,12 @@ class CMLTrainer(BaseTrainer):
                     self.model.zero_grad()
 
                     # compute distance
-                    # batch_size × 1 × 1
-                    pos_dist = self.model(users, pos_items)
-                    # batch_size × 1 × n_neg_samples
-                    neg_dist = self.model(users, neg_items)
+                    user_emb, pos_item_emb, neg_item_emb = self.model(
+                        users, pos_items, neg_items
+                    )
 
                     # compute loss
-                    loss = self.criterion(pos_dist, neg_dist)
+                    loss = self.criterion(user_emb, pos_item_emb, neg_items)
                     accum_loss += loss.item()
 
                     # gradient of loss

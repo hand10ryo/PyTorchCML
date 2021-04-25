@@ -19,8 +19,7 @@ class MFTrainer(BaseTrainer):
         # set evaluator and log dataframe
         valid_or_not = valid_evaluator is not None
         if valid_or_not:
-            self.valid_scores = pd.DataFrame(
-                valid_evaluator.score(self.model)).T
+            self.valid_scores = valid_evaluator.score(self.model).T
             self.valid_scores["epoch"] = 0
             self.valid_scores["loss"] = np.nan
 
@@ -40,14 +39,13 @@ class MFTrainer(BaseTrainer):
                     # initialize gradient
                     self.model.zero_grad()
 
-                    # compute inner product
-                    # batch_size × 1
-                    pos_inner = self.model(users, pos_items)
-                    # batch_size × n_neg_samples
-                    neg_inner = self.model(users, neg_items)
+                    # look up embeddings
+                    u_emb, ip_emb, in_emb, ub, ipb, inb = self.model(
+                        users, pos_items, neg_items
+                    )
 
                     # compute loss
-                    loss = self.criterion(pos_inner, neg_inner)
+                    loss = self.criterion(u_emb, ip_emb, in_emb, ub, ipb, inb)
                     accum_loss += loss.item()
 
                     # gradient of loss
@@ -62,8 +60,7 @@ class MFTrainer(BaseTrainer):
 
             # compute metrics for epoch
             if valid_or_not and (((ep+1) % valid_per_epoch == 0) or (ep == n_epoch-1)):
-                valid_scores_sub = pd.DataFrame(
-                    valid_evaluator.score(self.model)).T
+                self.valid_scores = valid_evaluator.score(self.model).T
                 valid_scores_sub["epoch"] = ep + 1
                 valid_scores_sub["loss"] = accum_loss / n_batch
                 self.valid_scores = pd.concat(

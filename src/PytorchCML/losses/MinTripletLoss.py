@@ -10,16 +10,22 @@ class MinTripletLoss(BaseTripletLoss):
         """
         super().__init__(margin)
 
-    def forward(self, pos_dist: torch.Tensor, neg_dist: torch.Tensor, weight=None) -> torch.Tensor:
+    def forward(self, user_emb: torch.Tensor,
+                pos_item_emb: torch.Tensor,
+                neg_item_emb: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            pos_dist : distance of pos pairs of size (n_batch, 1, 1)
-            neg_dist : distance of pos pairs of size (n_batch, 1, n_neg_samples)
-            weight : sample weight
+            user_emb : embeddings of user size (n_batch, 1, d)
+            pos_item_emb : embeddings of positive item size (n_batch, 1, d)
+            neg_item_emb : embeddings of negative item size (n_batch, n_neg_samples, d)
 
         Return:
             loss : L = Σ [m + pos_dist^2 - min(neg_dist)^2]
         """
+
+        pos_dist = torch.cdist(user_emb, pos_item_emb)
+        neg_dist = torch.cdist(user_emb, neg_item_emb)
+
         min_neg_dist = torch.min(neg_dist, axis=2)
         pairwiseloss = self.ReLU(
             self.margin + pos_dist ** 2 - min_neg_dist.values ** 2)
