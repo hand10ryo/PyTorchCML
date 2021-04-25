@@ -44,7 +44,9 @@ class BaseEmbeddingModel(nn.Module):
                 item_embedding_init)
             self.item_embedding.weight.requires_grad = True
 
-    def forward(self, users: torch.Tensor, items: torch.Tensor) -> torch.Tensor:
+    def forward(self, users: torch.Tensor,
+                pos_items: torch.Tensor,
+                neg_items: torch.Tensor) -> torch.Tensor:
         raise NotImplementedError
 
     def predict(self, pairs: torch.Tensor) -> torch.Tensor:

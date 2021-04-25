@@ -16,13 +16,15 @@ class BaseTripletLoss(nn.Module):
         self.margin = margin
         self.ReLU = nn.ReLU()
 
-    def forward(self, pos_dist: torch.Tensor, neg_dist: torch.Tensor, weight=None) -> torch.Tensor:
+    def forward(self, user_emb: torch.Tensor,
+                pos_item_emb: torch.Tensor,
+                neg_item_emb: torch.Tensor) -> torch.Tensor:
         """ Method of forward
 
         Args:
-            pos_dist (torch.Tensor): distance of pos pairs of size (n_batch, 1, 1)
-            neg_dist (torch.Tensor): distance of pos pairs of size (n_batch, 1, n_neg_samples)
-            weight ([type], optional): sample weight. Defaults to None.
+            user_emb : embeddings of user size (n_batch, 1, d)
+            pos_item_emb : embeddings of positive item size (n_batch, 1, d)
+            neg_item_emb : embeddings of negative item size (n_batch, n_neg_samples, d)
 
         Raises:
             NotImplementedError: [description]
