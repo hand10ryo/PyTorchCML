@@ -19,7 +19,7 @@ class CMLTrainer(BaseTrainer):
         # set evaluator and log dataframe
         valid_or_not = valid_evaluator is not None
         if valid_or_not:
-            self.valid_scores = valid_evaluator.score(self.model).T
+            self.valid_scores = valid_evaluator.score(self.model)
             self.valid_scores["epoch"] = 0
             self.valid_scores["loss"] = np.nan
 
@@ -53,7 +53,7 @@ class CMLTrainer(BaseTrainer):
                     )
 
                     # compute loss
-                    loss = self.criterion(user_emb, pos_item_emb, neg_items)
+                    loss = self.criterion(user_emb, pos_item_emb, neg_item_emb)
                     accum_loss += loss.item()
 
                     # gradient of loss
