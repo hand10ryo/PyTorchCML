@@ -112,7 +112,7 @@ class UserwiseEvaluator(BaseEvaluator):
                 df_eval = pd.concat([df_eval, df_eval_sub])
 
         if reduction == "mean":
-            score = df_eval.mean(axis=0)
+            score = pd.DataFrame(df_eval.mean(axis=0)).T
 
         else:
             score = df_eval.copy()

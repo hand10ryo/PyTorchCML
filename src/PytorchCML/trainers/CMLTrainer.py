@@ -19,8 +19,7 @@ class CMLTrainer(BaseTrainer):
         # set evaluator and log dataframe
         valid_or_not = valid_evaluator is not None
         if valid_or_not:
-            self.valid_scores = pd.DataFrame(
-                valid_evaluator.score(self.model)).T
+            self.valid_scores = valid_evaluator.score(self.model).T
             self.valid_scores["epoch"] = 0
             self.valid_scores["loss"] = np.nan
 
@@ -70,8 +69,7 @@ class CMLTrainer(BaseTrainer):
 
             # compute metrics for epoch
             if valid_or_not and (((ep+1) % valid_per_epoch == 0) or (ep == n_epoch-1)):
-                valid_scores_sub = pd.DataFrame(
-                    valid_evaluator.score(self.model)).T
+                valid_scores_sub = valid_evaluator.score(self.model)
                 valid_scores_sub["epoch"] = ep + 1
                 valid_scores_sub["loss"] = accum_loss / n_batch
                 self.valid_scores = pd.concat(
