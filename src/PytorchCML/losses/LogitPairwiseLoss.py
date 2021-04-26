@@ -10,8 +10,8 @@ class LogitPairwiseLoss(BasePairwiseLoss):
     """ Class of pairwise logit loss for Logistic Matrix Factorization 
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, regularizers: list = []):
+        super().__init__(regularizers)
         self.LogSigmoid = nn.LogSigmoid()
 
     def forward(self, user_emb: torch.Tensor,

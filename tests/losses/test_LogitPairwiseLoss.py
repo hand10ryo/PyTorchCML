@@ -1,6 +1,7 @@
 import unittest
 
 import torch
+from torch import nn
 import numpy as np
 
 from PytorchCML.losses import LogitPairwiseLoss
@@ -8,6 +9,11 @@ from PytorchCML.losses import LogitPairwiseLoss
 
 def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-x))
+
+
+class SampleRegularizer(nn.Module):
+    def forward(self, embeding_dict: dict) -> torch.Tensor:
+        return torch.ones(3).sum()
 
 
 class TestLogitPairwiseLoss(unittest.TestCase):
@@ -22,8 +28,6 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         loss = [[10], [1]]
         avg_loss = 5.5
         """
-        criterion = LogitPairwiseLoss()
-
         user_emb = torch.ones(3, 5)
         pos_item_emb = torch.ones(3, 5) * 2
         neg_item_emb = torch.ones(3, 2, 5)
@@ -32,6 +36,8 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         pos_item_bias = torch.zeros(3, 1) * 2
         neg_item_bias = torch.zeros(3, 2, 1)
 
+        # without regularizer
+        criterion = LogitPairwiseLoss()
         loss = criterion(
             user_emb, pos_item_emb, neg_item_emb,
             user_bias, pos_item_bias, neg_item_bias
@@ -39,6 +45,16 @@ class TestLogitPairwiseLoss(unittest.TestCase):
 
         self.assertGreater(loss, 0)
         self.assertAlmostEqual(loss, 3.3378, places=3)
+
+        # with regularizer
+        regs = [SampleRegularizer()]
+        criterion = LogitPairwiseLoss(regularizers=regs)
+        loss = criterion(
+            user_emb, pos_item_emb, neg_item_emb,
+            user_bias, pos_item_bias, neg_item_bias
+        ).item()
+        self.assertGreater(loss, 0)
+        self.assertAlmostEqual(loss, 6.3378, places=3)
 
 
 if __name__ == '__main__':
