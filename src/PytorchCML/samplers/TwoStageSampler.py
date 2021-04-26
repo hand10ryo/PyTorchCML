@@ -3,16 +3,19 @@ from typing import Optional
 import numpy as np
 import torch
 from torch import nn
+from torch.distributions.categorical import Categorical
 
 from .BaseSampler import BaseSampler
 
 
 class TwoStageSampler(BaseSampler):
     def __init__(self, train_set: np.ndarray,
+                 n_user: Optional[int] = None, n_item: Optional[int] = None,
                  pos_weight: Optional[np.ndarray] = None,
                  neg_weight: Optional[np.ndarray] = None,
                  device: Optional[torch.device] = None,
                  batch_size: int = 256, n_neg_samples: int = 10,
+                 strict_negative: bool = False,
                  n_neg_candidates=200):
         """ Class of Two Stage Sampler for CML.
 
@@ -25,8 +28,8 @@ class TwoStageSampler(BaseSampler):
             n_neg_samples (int, optional): [description]. Defaults to 10.
             n_neg_candidates (int, optional): [description]. Defaults to 200.
         """
-        super().__init__(train_set, pos_weight, neg_weight,
-                         device, batch_size, n_neg_samples)
+        super().__init__(train_set, n_user, n_item, pos_weight, neg_weight,
+                         device, batch_size, n_neg_samples, strict_negative)
 
         self.two_stage = True
         self.n_neg_candidates = n_neg_candidates
@@ -76,7 +79,7 @@ class TwoStageSampler(BaseSampler):
         # all zero -> uniform
         self.candidates_weight[self.candidates_weight.sum(axis=1) == 0] = 1
 
-    def get_neg_batch(self) -> torch.Tensor:
+    def get_neg_batch(self, users: torch.Tensor) -> torch.Tensor:
         """ Method of negative sampling
 
         Args:
@@ -85,10 +88,17 @@ class TwoStageSampler(BaseSampler):
         Returns:
             torch.Tensor: negative samples.
         """
+
+        if self.strict_negative:
+            pos_item_mask = torch.Tensor(self.train_matrix[users.to("cpu")].A)
+            pos_item_mask_candidate = pos_item_mask[:, self.candidates]
+            weight = (1 - pos_item_mask_candidate) * self.candidates_weight
+
+        else:
+            weight = self.candidates_weight
+
         neg_candidates_indices = torch.stack([
-            torch.distributions.categorical.Categorical(
-                probs=self.candidates_weight[i]
-            ).sample([self.n_neg_samples])
+            Categorical(probs=weight[i]).sample([self.n_neg_samples])
             for i in range(self.batch_size)
         ])
 
