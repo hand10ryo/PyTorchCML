@@ -29,6 +29,15 @@ class LogitPairwiseLoss(BasePairwiseLoss):
             pos_item_bias : bias of positive item size (n_batch, 1)
             neg_item_bias : bias of negative item size (n_batch, n_neg_samples, 1)
         """
+        embeddings_dict = {
+            "user_emb": user_emb,
+            "pos_item_emb": pos_item_emb,
+            "neg_item_emb": neg_item_emb,
+            "user_bias": user_bias,
+            "pos_item_bias": pos_item_bias,
+            "neg_item_bias": neg_item_bias
+        }
+
         n_batch = user_emb.shape[0]
         n_pos = 1
         n_neg = neg_item_emb.shape[1]
@@ -44,4 +53,6 @@ class LogitPairwiseLoss(BasePairwiseLoss):
         neg_loss = - nn.LogSigmoid()(-neg_y_hat).sum()
 
         loss = (pos_loss + neg_loss) / (n_batch * (n_pos + n_neg))
-        return loss
+        reg = self.regularize(embeddings_dict)
+
+        return loss + reg

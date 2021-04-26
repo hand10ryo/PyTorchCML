@@ -5,10 +5,10 @@ from .BaseTripletLoss import BaseTripletLoss
 
 
 class MinTripletLoss(BaseTripletLoss):
-    def __init__(self, margin: float = 1):
+    def __init__(self, margin: float = 1, regularizers: list = []):
         """ Class of Triplet Loss taking minimum negative sample.
         """
-        super().__init__(margin)
+        super().__init__(margin, regularizers)
 
     def forward(self, user_emb: torch.Tensor,
                 pos_item_emb: torch.Tensor,

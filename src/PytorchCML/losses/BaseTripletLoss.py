@@ -7,8 +7,7 @@ class BaseTripletLoss(nn.Module):
     """Class of Abstract Loss for Triplet
     """
 
-    def __init__(self, margin: float = 1,
-                 regularizers: Optional[list] = []):
+    def __init__(self, margin: float = 1, regularizers: list = []):
         """ Set margin size and ReLU function
 
         Args:

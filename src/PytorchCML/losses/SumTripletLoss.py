@@ -8,8 +8,8 @@ class SumTripletLoss(BaseTripletLoss):
     """ Class of Triplet Loss taking sum of negative sample.
     """
 
-    def __init__(self, margin: float = 1):
-        super().__init__(margin)
+    def __init__(self, margin: float = 1, regularizers: list = []):
+        super().__init__(margin, regularizers)
 
     def forward(self, user_emb: torch.Tensor,
                 pos_item_emb: torch.Tensor,
