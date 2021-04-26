@@ -27,5 +27,5 @@ class SumTripletLoss(BaseTripletLoss):
         neg_dist = torch.cdist(user_emb, neg_item_emb)
 
         tripletloss = self.ReLU(self.margin + pos_dist ** 2 - neg_dist ** 2)
-        loss = torch.sum(tripletloss)
+        loss = torch.mean(tripletloss)
         return loss

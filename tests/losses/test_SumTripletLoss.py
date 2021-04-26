@@ -20,7 +20,7 @@ class TestSumTripletLoss(unittest.TestCase):
 
         loss = criterion(user_emb, pos_item_emb, neg_item_emb).item()
         self.assertGreater(loss, 0)
-        self.assertEqual(loss, 18)
+        self.assertEqual(loss, 6)
 
 
 if __name__ == '__main__':
