@@ -1,3 +1,4 @@
+from typing import Optional
 import torch
 from torch import nn
 
@@ -6,15 +7,18 @@ class BaseTripletLoss(nn.Module):
     """Class of Abstract Loss for Triplet
     """
 
-    def __init__(self, margin: float = 1):
+    def __init__(self, margin: float = 1,
+                 regularizers: Optional[list] = []):
         """ Set margin size and ReLU function
 
         Args:
             margin (float, optional): safe margin size. Defaults to 1.
+            regularizers (list, optional): list of regularizer
         """
         super().__init__()
         self.margin = margin
         self.ReLU = nn.ReLU()
+        self.regularizers = regularizers
 
     def forward(self, user_emb: torch.Tensor,
                 pos_item_emb: torch.Tensor,
@@ -32,4 +36,23 @@ class BaseTripletLoss(nn.Module):
         Returns:
             torch.Tensor: [description]
         """
+
+        embeddings_dict = {
+            "user_emb": user_emb,
+            "pos_item_emb": pos_item_emb,
+            "neg_item_emb": neg_item_emb
+        }
+
+        #
+        # loss = some_function(user_emb, pos_item_emb, neg_item_emb)
+        # reg = self.regularize(embeddings_dict)
+        # return loss + reg
+
         raise NotImplementedError
+
+    def regularize(self, embeddings_dict: dict):
+        reg = 0
+        for regularizer in self.regularizers:
+            reg += regularizer(embeddings_dict)
+
+        return reg

@@ -23,9 +23,17 @@ class SumTripletLoss(BaseTripletLoss):
         Return:
             loss : L = Σ [m + pos_dist^2 - min(neg_dist)^2]
         """
+        embeddings_dict = {
+            "user_emb": user_emb,
+            "pos_item_emb": pos_item_emb,
+            "neg_item_emb": neg_item_emb
+        }
+
         pos_dist = torch.cdist(user_emb, pos_item_emb)
         neg_dist = torch.cdist(user_emb, neg_item_emb)
 
         tripletloss = self.ReLU(self.margin + pos_dist ** 2 - neg_dist ** 2)
         loss = torch.mean(tripletloss)
-        return loss
+        reg = self.regularize(embeddings_dict)
+
+        return loss + reg

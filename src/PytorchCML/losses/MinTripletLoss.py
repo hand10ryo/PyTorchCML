@@ -22,6 +22,11 @@ class MinTripletLoss(BaseTripletLoss):
         Return:
             loss : L = Σ [m + pos_dist^2 - min(neg_dist)^2]
         """
+        embeddings_dict = {
+            "user_emb": user_emb,
+            "pos_item_emb": pos_item_emb,
+            "neg_item_emb": neg_item_emb
+        }
 
         pos_dist = torch.cdist(user_emb, pos_item_emb)
         neg_dist = torch.cdist(user_emb, neg_item_emb)
@@ -29,5 +34,8 @@ class MinTripletLoss(BaseTripletLoss):
         min_neg_dist = torch.min(neg_dist, axis=2)
         pairwiseloss = self.ReLU(
             self.margin + pos_dist ** 2 - min_neg_dist.values ** 2)
+
         loss = torch.mean(pairwiseloss)
-        return loss
+        reg = self.regularize(embeddings_dict)
+
+        return loss + reg
