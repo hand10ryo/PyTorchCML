@@ -47,7 +47,6 @@ class LogitPairwiseLoss(BasePairwiseLoss):
         neg_inner = torch.einsum('nd,njd->nj', user_emb, neg_item_emb)
 
         pos_y_hat = pos_inner + (user_bias + pos_item_bias).reshape(-1)
-        # pos_y_hat = pos_inner + user_bias + pos_item_bias
         neg_y_hat = neg_inner + user_bias + neg_item_bias
 
         pos_loss = - nn.LogSigmoid()(pos_y_hat).sum()
