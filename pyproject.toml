@@ -3,6 +3,8 @@ name = "PytorchCML"
 version = "0.1.0"
 description = "Collaboratiev Metric Learning implemnted by Pytorch"
 authors = ["hand10ryo <hand10ryo@yahoo.co.jp>"]
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.8"

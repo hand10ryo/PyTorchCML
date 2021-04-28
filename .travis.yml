@@ -2,20 +2,33 @@ language: python
 python:
 - 3.8
 
-# env:
-#  global:
-#  - secure: "<encrypted MYPYPI_USER=username>"
-#  - secure: "<encrypted MYPYPI_PASS=p@ssword>"
+env:
+  global:
+  - secure: "WhbaVui28sHA5HxjHpxB3B7O6HM8gfJDbI7Kq8dLkqmtazKCjSy4mY5fQuwCJRUzX+cvY3Dp7WN90bgFdROANiXFrjO0fdw/7AuDCKx4OFZX/hMOqxg1X8P+Uiy62gXytfscs25fswfm/FrV8fJ19lugcmxM8nxF+/feqOYbMNu6mh9CN/2WkcowA3kxcG6Juwy88rEfml3xZEm4SZ98UPvJDG0aljGWaqUdCcryofRj/1DZohzl11hEtwLYp3z008KFb38LZ0ieIK4g6I8B+xucAwzp5v3B2mEDKWNVjYIhPhP+Bsa1TR2G50NY3x4dZb8lrmzMXScRGJgkB8M/eSEDJu3YaEyeqq2I+TPQhvY5MlxEI9aDSVfRfXodf85tgRFcIKoT+EMKizRAhPd5YxX/hcV0RoqEgOt6v02eVLpxpZdzN7e3RGfL0HuQt9mQ1OvsyppDjbZbxWnaraMOJgMfUdqjE5PLGeFLL1dolGJLfoOYRo3TL/h6QwI1r5MB+b8RQz7TdJCpLoniOcASfcsl0vjGYw4jFiWyQZWuK3lCdS/f6y0Bjh1IP7ygCB6XbABcsAF8ToYFMXby940hm6/qyX9q2NBLfvksAo3YNosuInssgOjl4HM1L1d5HBTKu0T+26QleTbu5E5doOaAIkPkPsMduyI6btN5VdNrv1I="
+  - secure: "Io0pcBECX5Wo/SuPw5j8/FyBKIcTJL7SHPR1mSrezgkhWEISO3RNjZf78RJ4ZftxIs5taskpz+F+DU2UjZuxK/Yl10V9JAA8ljtAm7EARhPt9Y8J+I5xBU6Psi8p0XExQj9HlK2UixUf3hbPulNVnDSthckPkwVhRMHmgm+m0mdwxAKnervUSK16y3TOYlX82mxFHs8wBJ/ZK2ilAniI5Dxev4C3zYTOlMjEODD+vWrbNgrxlff9JygrAk7TNH8fhu15Ef/Bl8rAkSIDbMCTEtbEA92MPZU73eUKrgbkAixLKI4LBfwTd6bQXLCNyRGHO/2bgp1C9bKsWVIx2h08Qdhqh3OXJqA/T1RZ0NyL5h0zml5jT5rs4ikn3QAwEt6XY/8F6YPxA6Ya2LJGoJprkNGfMSSAsYiMSCTSLcMhJjILbbzyPvnic5VGO4VIeSBtBA0OdZ20Awldbl8jnYUL+mVqN4zVoRPHzJ3HA1zzuj5ssOYg8hHp7nj6WpclUsHGmc2249895bwRSB3Ijq4uATYfBJegmieqKs+hrMcx5NrL5Nxnz94UpSV7in7Ug+io9jK6t49oxcp0uAOKNvVIhz52lr4F6yhx2kHV+Fhz5qNF7g9vzmjh5rMaKdqNcYLv9oxEvVthAbxIvdRVUUCcDKVzrK4LYR/QzTjXVarSqFw="
 
 before_install:
 - pip install poetry
+
 install:
 - poetry install
+
 script:
 - poetry run flake8 --ignore=E501 src/PytorchCML tests
 - poetry run python -m unittest discover -b
 
-#before_deploy:
+before_deploy:
+- poetry config repositories.testpypi https://test.pypi.org/legacy/
+- poetry config http-basic.testpypi $MYPYPI_USER $MYPYPI_PASS
+- poetry build -f sdist
+
+deploy:
+  provider: script
+  script: poetry publish -r testpypi
+  #skip_cleanup: true
+  #on:
+  #  tags: true
+
 #- poetry config repositories.mypypi http://mypypi.example.com/simple
 #- poetry config http-basic.mypypi $MYPYPI_USER $MYPYPI_PASS
 #- poetry build -f sdist
