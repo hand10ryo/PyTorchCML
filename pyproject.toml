@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "PytorchCML"
+version = "0.1.0"
+description = "Collaboratiev Metric Learning implemnted by Pytorch"
+authors = ["hand10ryo <hand10ryo@yahoo.co.jp>"]
+
+[tool.poetry.dependencies]
+python = "3.8"
+torch = "^1.8.1"
+scikit-learn = "^0.24.1"
+numpy = "^1.20.2"
+scipy = "^1.6.3"
+pandas = "^1.2.4"
+tqdm = "^4.60.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.1"
+autopep8 = "^1.5.6"
+black = "^21.4b1"
+isort = "^5.8.0"
+mypy = "^0.812"
+ipykernel = "^5.5.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
