@@ -1,3 +1,2 @@
-from ._path import *
-import torch
-import PytorchCML
+from ._path import *  # noqa
+import PytorchCML  # noqa

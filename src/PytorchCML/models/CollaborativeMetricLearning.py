@@ -1,20 +1,16 @@
-from typing import Optional
-
 import torch
-from torch import nn
 
 from .BaseEmbeddingModel import BaseEmbeddingModel
 
 
 class CollaborativeMetricLearning(BaseEmbeddingModel):
-
-    def forward(self, users: torch.Tensor,
-                pos_items: torch.Tensor,
-                neg_items: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, users: torch.Tensor, pos_items: torch.Tensor, neg_items: torch.Tensor
+    ) -> torch.Tensor:
         """
         Args:
-            users : tensor of user indices size (n_batch, 1). 
-            pos_items : tensor of item indices size (n_batch, 1), 
+            users : tensor of user indices size (n_batch, 1).
+            pos_items : tensor of item indices size (n_batch, 1),
             neg_items : tensor of item indices size (n_batch, n_neg_samples)
 
         Returns:
@@ -34,9 +30,9 @@ class CollaborativeMetricLearning(BaseEmbeddingModel):
 
     def spreadout_distance(self, pos_items: torch.Tensor, neg_itmes: torch.Tensor):
         """
-         Args:
-            pos_items : tensor of user indices size (n_batch, 1). 
-            neg_itmes : tensor of item indices size (n_neg_candidates)
+        Args:
+           pos_items : tensor of user indices size (n_batch, 1).
+           neg_itmes : tensor of item indices size (n_neg_candidates)
         """
 
         # get enmbeddigs

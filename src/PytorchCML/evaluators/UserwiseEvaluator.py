@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.metrics import average_precision_score, ndcg_score, recall_score
-from torch import nn, optim
 from tqdm import tqdm
 
 from ..models import BaseEmbeddingModel
@@ -10,11 +9,12 @@ from .BaseEvaluator import BaseEvaluator
 
 
 class UserwiseEvaluator(BaseEvaluator):
-    """ Class of evaluator computing metrics for each user and calcurating average.
-    """
+    """Class of evaluator computing metrics for each user and calcurating average."""
 
-    def __init__(self, test_set: torch.Tensor, score_function_dict: dict, ks: list = [5]):
-        """ Set test data and metrics.
+    def __init__(
+        self, test_set: torch.Tensor, score_function_dict: dict, ks: list = [5]
+    ):
+        """Set test data and metrics.
 
         Args:
             test_set (torch.Tensor): test data which column is [user_id, item_id, rating].
@@ -27,9 +27,9 @@ class UserwiseEvaluator(BaseEvaluator):
             "nDCG" : evaluators.ndcg,
             "MAP" : evaluators.average_precision,
             "Recall": evaluators.recall
-        } 
+        }
 
-        arguments of each functions must be 
+        arguments of each functions must be
             y_test_user (np.ndarray): grand truth for the user
             y_hat_user (np.ndarray) : prediction of relevance
             k : a number of top item considered.
@@ -40,13 +40,13 @@ class UserwiseEvaluator(BaseEvaluator):
         self.ks = ks
 
         self.metrics_names = [
-            f"{name}@{k}"
-            for k in ks
-            for name in score_function_dict.keys()
+            f"{name}@{k}" for k in ks for name in score_function_dict.keys()
         ]
 
-    def compute_score(self, y_test_user: np.ndarray, y_hat_user: np.ndarray) -> pd.DataFrame:
-        """ Method of computing score.
+    def compute_score(
+        self, y_test_user: np.ndarray, y_hat_user: np.ndarray
+    ) -> pd.DataFrame:
+        """Method of computing score.
         This method make a row of DataFrame which has scores for each metrics and k for the user.
 
         Args:
@@ -61,16 +61,18 @@ class UserwiseEvaluator(BaseEvaluator):
             return pd.DataFrame({name: [0] for name in self.metrics_names})
 
         else:
-            df_eval_sub = pd.DataFrame({
-                f"{name}@{k}": [metric(y_test_user, y_hat_user, k)]
-                for k in self.ks
-                for name, metric in self.score_function_dict.items()
-            })
+            df_eval_sub = pd.DataFrame(
+                {
+                    f"{name}@{k}": [metric(y_test_user, y_hat_user, k)]
+                    for k in self.ks
+                    for name, metric in self.score_function_dict.items()
+                }
+            )
 
         return df_eval_sub
 
     def eval_user(self, model: BaseEmbeddingModel, uid: int) -> pd.DataFrame:
-        """ Method of evaluating for given user.
+        """Method of evaluating for given user.
 
         Args:
             model (BaseEmbeddingModel): model which have user and item embeddings.
@@ -79,7 +81,7 @@ class UserwiseEvaluator(BaseEvaluator):
         Returns:
             (pd.DataFrame): a row of DataFrame which has scores for each metrics and k for the user.
         """
-        user_indices = (self.test_set[:, 0] == uid)
+        user_indices = self.test_set[:, 0] == uid
         test_set_pair = self.test_set[user_indices, :2]
 
         y_hat_user = model.predict(test_set_pair).to("cpu").detach().numpy()
@@ -87,8 +89,10 @@ class UserwiseEvaluator(BaseEvaluator):
 
         return self.compute_score(y_test_user, y_hat_user)
 
-    def score(self, model: BaseEmbeddingModel, reduction="mean", verbose=True) -> pd.DataFrame:
-        """ Method of calculating average score for all users.
+    def score(
+        self, model: BaseEmbeddingModel, reduction="mean", verbose=True
+    ) -> pd.DataFrame:
+        """Method of calculating average score for all users.
 
         Args:
             model (BaseEmbeddingModel): model which have user and item embeddings.
@@ -121,7 +125,7 @@ class UserwiseEvaluator(BaseEvaluator):
 
 
 def ndcg(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int) -> float:
-    """ Function for user-wise evaluator calculating ndcg @ k
+    """Function for user-wise evaluator calculating ndcg @ k
 
     Args:
         y_test_user (np.ndarray): grand truth for the user
@@ -137,7 +141,7 @@ def ndcg(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int) -> float:
 
 
 def average_precision(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
-    """ Function for user-wise evaluator calculating average precision (MAP) @ k
+    """Function for user-wise evaluator calculating average precision (MAP) @ k
 
     Args:
         y_test_user (np.ndarray): grand truth for the user
@@ -158,7 +162,7 @@ def average_precision(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
 
 
 def recall(y_test_user: np.ndarray, y_hat_user: np.ndarray, k: int):
-    """ Function for user-wise evaluator calculating Recall @ k
+    """Function for user-wise evaluator calculating Recall @ k
 
     Args:
         y_test_user (np.ndarray): grand truth for the user

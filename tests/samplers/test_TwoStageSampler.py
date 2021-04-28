@@ -13,14 +13,7 @@ class TestTwoStageSampler(unittest.TestCase):
         """
         test get_pos_batch
         """
-        train_set = torch.LongTensor([
-            [0, 0],
-            [0, 2],
-            [1, 1],
-            [1, 3],
-            [2, 3],
-            [2, 4]
-        ])
+        train_set = torch.LongTensor([[0, 0], [0, 2], [1, 1], [1, 3], [2, 3], [2, 4]])
 
         sampler = TwoStageSampler(
             train_set,
@@ -83,14 +76,7 @@ class TestTwoStageSampler(unittest.TestCase):
         """
         test get_neg_batch
         """
-        train_set = torch.LongTensor([
-            [0, 0],
-            [0, 2],
-            [1, 1],
-            [1, 3],
-            [2, 3],
-            [2, 4]
-        ])
+        train_set = torch.LongTensor([[0, 0], [0, 2], [1, 1], [1, 3], [2, 3], [2, 4]])
         interactions = {
             0: [0, 2],
             1: [1, 3],
@@ -103,14 +89,13 @@ class TestTwoStageSampler(unittest.TestCase):
             batch_size=3,
             n_neg_samples=2,
             n_neg_candidates=3,
-            strict_negative=True
+            strict_negative=True,
         )
         pos_batch = sampler.get_pos_batch()
         users = pos_batch[:, 0:1]
-        pos_items = pos_batch[:, 1:]
 
         # two stage
-        neg_candidates = sampler.get_and_set_candidates()
+        sampler.get_and_set_candidates()
         dist = torch.ones(3, 3)
         sampler.set_candidates_weight(dist, 3)
         neg_batch = sampler.get_neg_batch(users.reshape(-1))
@@ -145,10 +130,9 @@ class TestTwoStageSampler(unittest.TestCase):
         )
         pos_batch = sampler.get_pos_batch()
         users = pos_batch[:, 0:1]
-        pos_items = pos_batch[:, 1:]
 
         # two stage
-        neg_candidates = sampler.get_and_set_candidates()
+        sampler.get_and_set_candidates()
         dist = torch.ones(100, 3)
         sampler.set_candidates_weight(dist, 3)
         neg_batch = sampler.get_neg_batch(users.reshape(-1))
@@ -158,5 +142,5 @@ class TestTwoStageSampler(unittest.TestCase):
         self.assertGreaterEqual(cnt_heavy, cnt_lignt)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

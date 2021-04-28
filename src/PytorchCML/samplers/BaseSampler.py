@@ -2,19 +2,23 @@ from typing import Optional
 
 import numpy as np
 import torch
-from torch import nn
 from torch.distributions.categorical import Categorical
 from scipy.sparse import csr_matrix
 
 
 class BaseSampler:
-    def __init__(self, train_set: np.ndarray,
-                 n_user: Optional[int] = None, n_item: Optional[int] = None,
-                 pos_weight: Optional[np.ndarray] = None,
-                 neg_weight: Optional[np.ndarray] = None,
-                 device: Optional[torch.device] = None,
-                 batch_size: int = 256, n_neg_samples: int = 10,
-                 strict_negative: bool = False):
+    def __init__(
+        self,
+        train_set: np.ndarray,
+        n_user: Optional[int] = None,
+        n_item: Optional[int] = None,
+        pos_weight: Optional[np.ndarray] = None,
+        neg_weight: Optional[np.ndarray] = None,
+        device: Optional[torch.device] = None,
+        batch_size: int = 256,
+        n_neg_samples: int = 10,
+        strict_negative: bool = False,
+    ):
         """Class of Base Sampler for get positive and negative batch.
         Args:
             train_set (np.ndarray): [description]
@@ -35,7 +39,7 @@ class BaseSampler:
         self.train_set = torch.LongTensor(train_set).to(device)
         self.train_matrix = csr_matrix(
             (np.ones(train_set.shape[0]), (train_set[:, 0], train_set[:, 1])),
-            [n_user, n_item]
+            [n_user, n_item],
         )
         self.n_neg_samples = n_neg_samples
         self.batch_size = batch_size
@@ -54,8 +58,7 @@ class BaseSampler:
 
         # device
         if device is None:
-            device = torch.device(
-                "cuda:0" if torch.cuda.is_available() else "cpu")
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # set pos weight
         if pos_weight is not None:  # weighted
@@ -89,7 +92,7 @@ class BaseSampler:
         self.neg_sampler = Categorical(probs=self.neg_weight_item)
 
     def get_pos_batch(self) -> torch.Tensor:
-        """ Method for positive sampling.
+        """Method for positive sampling.
 
         Returns:
             torch.Tensor: positive batch.
@@ -99,7 +102,7 @@ class BaseSampler:
         return batch
 
     def get_neg_batch(self, users: torch.Tensor) -> torch.Tensor:
-        """ Method of negative sampling
+        """Method of negative sampling
 
         Args:
             users (torch.Tensor): indices of users in pos pairs.
@@ -111,9 +114,7 @@ class BaseSampler:
         if self.strict_negative:
             pos_item_mask = torch.Tensor(self.train_matrix[users.to("cpu")].A)
             weight = torch.einsum(
-                "i,ni->ni",
-                self.neg_weight_item,
-                1 - pos_item_mask.to(self.device)
+                "i,ni->ni", self.neg_weight_item, 1 - pos_item_mask.to(self.device)
             )
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
