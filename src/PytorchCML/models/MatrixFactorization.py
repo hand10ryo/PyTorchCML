@@ -7,13 +7,18 @@ from .BaseEmbeddingModel import BaseEmbeddingModel
 
 
 class LogitMatrixFactorization(BaseEmbeddingModel):
-    def __init__(self, n_user: int, n_item: int, n_dim: int = 20,
-                 max_norm: Optional[float] = None,
-                 max_bias: Optional[float] = 1,
-                 user_embedding_init: Optional[torch.Tensor] = None,
-                 item_embedding_init: Optional[torch.Tensor] = None,
-                 user_bias_init: Optional[torch.Tensor] = None,
-                 item_bias_init: Optional[torch.Tensor] = None):
+    def __init__(
+        self,
+        n_user: int,
+        n_item: int,
+        n_dim: int = 20,
+        max_norm: Optional[float] = None,
+        max_bias: Optional[float] = 1,
+        user_embedding_init: Optional[torch.Tensor] = None,
+        item_embedding_init: Optional[torch.Tensor] = None,
+        user_bias_init: Optional[torch.Tensor] = None,
+        item_bias_init: Optional[torch.Tensor] = None,
+    ):
         """
         Args :
             user_bias_init : 1d torch.Tensor size = (n_user)
@@ -21,8 +26,7 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         """
 
         super().__init__(
-            n_user, n_item, n_dim, max_norm,
-            user_embedding_init, item_embedding_init
+            n_user, n_item, n_dim, max_norm, user_embedding_init, item_embedding_init
         )
         self.max_bias = max_bias
 
@@ -31,8 +35,7 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         else:
             self.user_bias = nn.Embedding.from_pretrained(
-                user_bias_init.reshape(-1, 1),
-                max_norm=max_bias
+                user_bias_init.reshape(-1, 1), max_norm=max_bias
             )
             self.user_bias.weight.requires_grad = True
 
@@ -41,23 +44,22 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
 
         else:
             self.item_bias = nn.Embedding.from_pretrained(
-                item_bias_init.reshape(-1, 1),
-                max_norm=max_bias
+                item_bias_init.reshape(-1, 1), max_norm=max_bias
             )
             self.item_bias.weight.requires_grad = True
 
-    def forward(self, users: torch.Tensor,
-                pos_items: torch.Tensor,
-                neg_items: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, users: torch.Tensor, pos_items: torch.Tensor, neg_items: torch.Tensor
+    ) -> torch.Tensor:
         """
         Args:
-            users : tensor of user indices size (n_batch). 
+            users : tensor of user indices size (n_batch).
             pos_items : tensor of item indices size (n_batch, 1)
             neg_items : tensor of item indices size (n_batch, n_neg_samples)
 
         Returns:
             inner : inner product for each users and item pair
-                   pos_pairs -> size (n_batch, 1), 
+                   pos_pairs -> size (n_batch, 1),
                    neg_pairs -> size (n_batch, n_neg_samples)
 
         """
@@ -97,7 +99,7 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         i_bias = self.item_bias(items)  # batch_size × 1
 
         # compute distance
-        inner = torch.einsum('nd,nd->n', u_emb, i_emb)
+        inner = torch.einsum("nd,nd->n", u_emb, i_emb)
 
         return inner + u_bias.reshape(-1) + i_bias.reshape(-1)
 
