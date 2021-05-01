@@ -29,7 +29,7 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
             n_user, n_item, n_dim, max_norm, user_embedding_init, item_embedding_init
         )
         self.max_bias = max_bias
-        self.weight_link = lambda x: torch.sigmoid(x)
+        self.weight_link = lambda x: torch.sigmoid(-x)
 
         if user_bias_init is None:
             self.user_bias = nn.Embedding(n_user, 1, max_norm=max_bias)
