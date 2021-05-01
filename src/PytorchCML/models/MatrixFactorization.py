@@ -29,6 +29,7 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
             n_user, n_item, n_dim, max_norm, user_embedding_init, item_embedding_init
         )
         self.max_bias = max_bias
+        self.weight_link = lambda x: torch.sigmoid(x)
 
         if user_bias_init is None:
             self.user_bias = nn.Embedding(n_user, 1, max_norm=max_bias)
@@ -80,12 +81,18 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         return u_emb, ip_emb, in_emb, ub, ipb, inb
 
     def predict(self, pairs: torch.Tensor) -> torch.Tensor:
-        """
+        """Method of predicting relevance for each pair of user and item.
+
         Args:
-            pairs : tensor of indices for user and item pairs size (n_pairs, 2).
+            pairs (torch.Tensor): 2d tensor which columns are [user_id, item_id].
+
+        Raises:
+            NotImplementedError: [description]
+
         Returns:
-            inner : inner product for each users and item pair size (n_batch)
+            torch.Tensor: inner product for each users and item pair size (n_batch).
         """
+
         # set users and user
         users = pairs[:, 0]
         items = pairs[:, 1]
@@ -113,3 +120,37 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         pred = self.predict(pairs)
         proba = torch.sigmoid(pred)
         return proba
+
+    def get_item_score(self, users: torch.Tensor) -> torch.Tensor:
+        """Method of getting scores of all items for each user.
+        Args:
+            users (torch.Tensor): 1d tensor of user_id size (n).
+
+        Raises:
+            NotImplementedError: [description]
+
+        Returns:
+            torch.Tensor: Tensor of item scores size (n, n_item)
+        """
+        u_emb = self.user_embedding(users)
+        u_bias = self.user_bias(users)
+        item_score = u_emb @ self.item_embedding.weight.T
+        item_score += self.item_bias.weight.T + u_bias
+
+        return item_score
+
+    def get_item_weight(self, users: torch.Tensor) -> torch.Tensor:
+        """Method of getting weight for negative sampling
+        Args:
+            users (torch.Tensor): 1d tensor of user_id size (n).
+
+        Raises:
+            NotImplementedError: [description]
+
+        Returns:
+            torch.Tensor: Tensor of weight size (n, n_item)
+        """
+        item_score = self.get_item_score(users)
+        weight = self.weight_link(item_score)
+
+        return weight

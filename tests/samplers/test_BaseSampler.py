@@ -4,6 +4,7 @@ import torch
 import numpy as np
 
 from PytorchCML.samplers import BaseSampler
+from PytorchCML.models import LogitMatrixFactorization
 
 
 class TestBaseSampler(unittest.TestCase):
@@ -13,14 +14,7 @@ class TestBaseSampler(unittest.TestCase):
         """
         test get_pos_batch
         """
-        train_set = torch.LongTensor([
-            [0, 0],
-            [0, 2],
-            [1, 1],
-            [1, 3],
-            [2, 3],
-            [2, 4]
-        ])
+        train_set = torch.LongTensor([[0, 0], [0, 2], [1, 1], [1, 3], [2, 3], [2, 4]])
 
         sampler = BaseSampler(
             train_set,
@@ -83,14 +77,7 @@ class TestBaseSampler(unittest.TestCase):
         """
         test get_neg_batch
         """
-        train_set = torch.LongTensor([
-            [0, 0],
-            [0, 2],
-            [1, 1],
-            [1, 3],
-            [2, 3],
-            [2, 4]
-        ])
+        train_set = torch.LongTensor([[0, 0], [0, 2], [1, 1], [1, 3], [2, 3], [2, 4]])
         interactions = {
             0: [0, 2],
             1: [1, 3],
@@ -102,7 +89,7 @@ class TestBaseSampler(unittest.TestCase):
             n_item=5,
             batch_size=3,
             n_neg_samples=2,
-            strict_negative=True
+            strict_negative=True,
         )
         pos_batch = sampler.get_pos_batch()
         users = pos_batch[:, 0]
@@ -143,6 +130,30 @@ class TestBaseSampler(unittest.TestCase):
         cnt_lignt = (neg_batch == 0).sum().item()
         self.assertGreaterEqual(cnt_heavy, cnt_lignt)
 
+        # model weighted sampling
+        neg_weight_model = LogitMatrixFactorization(
+            n_user=3,
+            n_item=5,
+            n_dim=10,
+        )
 
-if __name__ == '__main__':
+        sampler = BaseSampler(
+            train_set,
+            n_user=3,
+            n_item=5,
+            neg_weight=neg_weight_model,
+            batch_size=100,
+            n_neg_samples=2,
+            strict_negative=True,
+        )
+        pos_batch = sampler.get_pos_batch()
+        users = pos_batch[:, 0]
+        neg_batch = sampler.get_neg_batch(users)
+
+        n, m = neg_batch.shape
+        self.assertEqual(n, 100)
+        self.assertEqual(m, 2)
+
+
+if __name__ == "__main__":
     unittest.main()
