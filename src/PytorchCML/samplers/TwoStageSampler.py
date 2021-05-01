@@ -119,12 +119,8 @@ class TwoStageSampler(BaseSampler):
         else:
             weight = self.candidates_weight
 
-        neg_candidates_indices = torch.stack(
-            [
-                Categorical(probs=weight[i]).sample([self.n_neg_samples])
-                for i in range(self.batch_size)
-            ]
-        )
+        neg_sampler = Categorical(probs=weight)
+        neg_indices = neg_sampler.sample([self.n_neg_samples]).T
+        neg_items = self.candidates[neg_indices]
 
-        neg_items = self.candidates[neg_candidates_indices]
         return neg_items
