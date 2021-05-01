@@ -1,9 +1,11 @@
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import torch
 from torch.distributions.categorical import Categorical
 from scipy.sparse import csr_matrix
+
+from ..models import BaseEmbeddingModel
 
 
 class BaseSampler:
@@ -13,7 +15,7 @@ class BaseSampler:
         n_user: Optional[int] = None,
         n_item: Optional[int] = None,
         pos_weight: Optional[np.ndarray] = None,
-        neg_weight: Optional[np.ndarray] = None,
+        neg_weight: Union[np.ndarray, BaseEmbeddingModel] = None,
         device: Optional[torch.device] = None,
         batch_size: int = 256,
         n_neg_samples: int = 10,
@@ -82,14 +84,19 @@ class BaseSampler:
 
         # set neg weight
         if neg_weight is None:  # uniorm
-            neg_weight_item = np.ones(self.n_item)
-        elif len(neg_weight) == self.n_item:  # weighted
-            neg_weight_item = neg_weight
+            self.negative_weighted_by_model = False
+            self.neg_item_weight = torch.ones(self.n_item).to(device)
+
+        elif isinstance(neg_weight, BaseEmbeddingModel):  # user-item weighted
+            self.negative_weighted_by_model = True
+            self.neg_weight_model = neg_weight
+
+        elif len(neg_weight) == self.n_item:  # item weighted
+            self.negative_weighted_by_model = False
+            self.neg_item_weight = torch.Tensor(neg_weight).to(device)
+
         else:
             raise NotImplementedError
-
-        self.neg_weight_item = torch.Tensor(neg_weight_item).to(device)
-        self.neg_sampler = Categorical(probs=self.neg_weight_item)
 
     def get_pos_batch(self) -> torch.Tensor:
         """Method for positive sampling.
@@ -111,14 +118,29 @@ class BaseSampler:
             torch.Tensor: negative samples.
         """
 
-        if self.strict_negative:
-            pos_item_mask = torch.Tensor(self.train_matrix[users.to("cpu")].A)
-            weight = torch.einsum(
-                "i,ni->ni", self.neg_weight_item, 1 - pos_item_mask.to(self.device)
-            )
+        if self.negative_weighted_by_model and self.strict_negative:
+            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
+            mask = 1 - pos_item_flag.to(self.device)
+            weight = self.neg_weight_model.get_item_weight(users)
+            weight *= mask
+
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
-            return neg_samples
+
+        elif self.negative_weighted_by_model and not self.strict_negative:
+            weight = self.neg_weight_model.get_item_weight(users)
+            neg_sampler = Categorical(probs=weight)
+            neg_samples = neg_sampler.sample([self.n_neg_samples]).T
+
+        elif not self.negative_weighted_by_model and self.strict_negative:
+            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
+            mask = 1 - pos_item_flag.to(self.device)
+            weight = mask * self.neg_item_weight
+            neg_sampler = Categorical(probs=weight)
+            neg_samples = neg_sampler.sample([self.n_neg_samples]).T
 
         else:
-            return self.neg_sampler.sample([self.batch_size, self.n_neg_samples])
+            neg_sampler = Categorical(probs=self.neg_item_weight)
+            neg_samples = neg_sampler.sample([self.batch_size, self.n_neg_samples])
+
+        return neg_samples
