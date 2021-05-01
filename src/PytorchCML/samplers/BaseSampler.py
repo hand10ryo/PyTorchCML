@@ -37,8 +37,9 @@ class BaseSampler:
         """
 
         self.train_set = train_set
+        train_set_cpu = train_set.cpu()
         self.train_matrix = csr_matrix(
-            (np.ones(train_set.shape[0]), (train_set[:, 0], train_set[:, 1])),
+            (np.ones(train_set.shape[0]), (train_set_cpu[:, 0], train_set_cpu[:, 1])),
             [n_user, n_item],
         )
         self.n_neg_samples = n_neg_samples
