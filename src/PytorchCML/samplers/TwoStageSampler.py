@@ -50,6 +50,7 @@ class TwoStageSampler(BaseSampler):
 
         self.two_stage = True
         self.n_neg_candidates = n_neg_candidates
+        self.neg_candidate_sampler = Categorical(probs=self.neg_item_weight)
 
     def get_pos_batch(self) -> torch.Tensor:
         """Method for positive sampling.
@@ -67,7 +68,7 @@ class TwoStageSampler(BaseSampler):
         Returns:
             torch.Tensor: Indices of items of negative sample candidate.
         """
-        self.candidates = self.neg_sampler.sample([self.n_neg_candidates])
+        self.candidates = self.neg_candidate_sampler.sample([self.n_neg_candidates])
         return self.candidates
 
     def set_candidates_weight(self, dist: torch.Tensor, dim: int):
