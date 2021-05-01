@@ -9,7 +9,7 @@ from scipy.sparse import csr_matrix
 class BaseSampler:
     def __init__(
         self,
-        train_set: np.ndarray,
+        train_set: torch.Tensor,
         n_user: Optional[int] = None,
         n_item: Optional[int] = None,
         pos_weight: Optional[np.ndarray] = None,
@@ -21,22 +21,22 @@ class BaseSampler:
     ):
         """Class of Base Sampler for get positive and negative batch.
         Args:
-            train_set (np.ndarray): [description]
-            n_user (Optional[int], optional): [description]. Defaults to None.
-            n_item (Optional[int], optional): [description]. Defaults to None.
-            pos_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
-            neg_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
-            device (Optional[torch.device], optional): [description]. Defaults to None.
-            batch_size (int, optional): [description]. Defaults to 256.
-            n_neg_samples (int, optional): [description]. Defaults to 10.
-            strict_negative (bool, optional): [description]. Defaults to False.
+            train_set (torch.Tensor): training interaction data which columns are [user_id, item_id]
+            n_user (Optional[int], optional): A number of user considered. Defaults to None.
+            n_item (Optional[int], optional): A number of item considered. Defaults to None.
+            pos_weight (Optional[np.ndarray], optional): Sampling weight for positive pair. Defaults to None.
+            neg_weight (Optional[np.ndarray], optional): Sampling weight for negative item. Defaults to None.
+            device (Optional[torch.device], optional): Device name. Defaults to None.
+            batch_size (int, optional): Length of mini-batch. Defaults to 256.
+            n_neg_samples (int, optional): A number of negative samples. Defaults to 10.
+            strict_negative (bool, optional): If removing positive items from negative samples or not. Defaults to False.
 
         Raises:
             NotImplementedError: [description]
             NotImplementedError: [description]
         """
 
-        self.train_set = torch.LongTensor(train_set).to(device)
+        self.train_set = train_set
         self.train_matrix = csr_matrix(
             (np.ones(train_set.shape[0]), (train_set[:, 0], train_set[:, 1])),
             [n_user, n_item],

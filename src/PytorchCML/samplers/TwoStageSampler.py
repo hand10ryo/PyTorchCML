@@ -25,13 +25,16 @@ class TwoStageSampler(BaseSampler):
         """Class of Two Stage Sampler for CML.
 
         Args:
-            train_set (np.ndarray): [description]
-            pos_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
-            neg_weight (Optional[np.ndarray], optional): [description]. Defaults to None.
-            device (Optional[torch.device], optional): [description]. Defaults to None.
-            batch_size (int, optional): [description]. Defaults to 256.
-            n_neg_samples (int, optional): [description]. Defaults to 10.
-            n_neg_candidates (int, optional): [description]. Defaults to 200.
+            train_set (torch.Tensor): training interaction data which columns are [user_id, item_id]
+            n_user (Optional[int], optional): A number of user considered. Defaults to None.
+            n_item (Optional[int], optional): A number of item considered. Defaults to None.
+            pos_weight (Optional[np.ndarray], optional): Sampling weight for positive pair. Defaults to None.
+            neg_weight (Optional[np.ndarray], optional): Sampling weight for negative item. Defaults to None.
+            device (Optional[torch.device], optional): Device name. Defaults to None.
+            batch_size (int, optional): Length of mini-batch. Defaults to 256.
+            n_neg_samples (int, optional): A number of negative samples. Defaults to 10.
+            strict_negative (bool, optional): If removing positive items from negative samples or not. Defaults to False.
+            n_neg_candidates (int, optional): A number of candidates in 1st stage negative sampling. Defaults to 200.
         """
         super().__init__(
             train_set,
