@@ -47,12 +47,12 @@ class BaseSampler:
         self.n_neg_samples = n_neg_samples
         self.batch_size = batch_size
         if n_user is None:
-            self.n_user = np.unique(train_set[:, 0]).shape[0]
+            self.n_user = np.unique(train_set[:, 0].cpu()).shape[0]
         else:
             self.n_user = n_user
 
         if n_user is None:
-            self.n_item = np.unique(train_set[:, 1]).shape[0]
+            self.n_item = np.unique(train_set[:, 1].cpu()).shape[0]
         else:
             self.n_item = n_item
         self.device = device
@@ -69,10 +69,10 @@ class BaseSampler:
                 pos_weight_pair = pos_weight
 
             elif len(pos_weight) == self.n_item:
-                pos_weight_pair = pos_weight[train_set[:, 1]]
+                pos_weight_pair = pos_weight[train_set[:, 1].cpu()]
 
             elif len(pos_weight) == self.n_user:
-                pos_weight_pair = pos_weight[train_set[:, 0]]
+                pos_weight_pair = pos_weight[train_set[:, 0].cpu()]
 
             else:
                 raise NotImplementedError
