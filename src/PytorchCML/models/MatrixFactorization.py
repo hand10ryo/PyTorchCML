@@ -19,10 +19,18 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         user_bias_init: Optional[torch.Tensor] = None,
         item_bias_init: Optional[torch.Tensor] = None,
     ):
-        """
-        Args :
-            user_bias_init : 1d torch.Tensor size = (n_user)
-            item_bias_init : 1d torch.Tensor size = (n_item)
+        """Set model parameters
+
+        Args:
+            n_user (int): A number of users
+            n_item (int): A number of item
+            n_dim (int, optional): A number of latent dimension. Defaults to 20.
+            max_norm (Optional[float], optional): upper bound of norm of latent vector. Defaults to None.
+            max_bias (Optional[float], optional): upper bound of bias. Defaults to 1.
+            user_embedding_init (Optional[torch.Tensor], optional): initial embeddings for users. Defaults to None.
+            item_embedding_init (Optional[torch.Tensor], optional): initial embeddings for item. Defaults to None.
+            user_bias_init (Optional[torch.Tensor], optional): initial biases for users. Defaults to None.
+            item_bias_init (Optional[torch.Tensor], optional): initial biases for item. Defaults to None.
         """
 
         super().__init__(
