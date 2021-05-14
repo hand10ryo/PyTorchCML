@@ -33,20 +33,18 @@ class MFTrainer(BaseTrainer):
                 for b in pbar:
                     # batch sampling
                     batch = self.sampler.get_pos_batch()
-                    users = batch[:, 0]
-                    pos_items = batch[:, 1]
+                    users = batch[:, self.column_names["user_id"]]
+                    pos_items = batch[:, self.column_names["item_id"]]
                     neg_items = self.sampler.get_neg_batch(users)
 
                     # initialize gradient
                     self.model.zero_grad()
 
                     # look up embeddings
-                    u_emb, ip_emb, in_emb, ub, ipb, inb = self.model(
-                        users, pos_items, neg_items
-                    )
+                    embeddings_dict = self.model(users, pos_items, neg_items)
 
                     # compute loss
-                    loss = self.criterion(u_emb, ip_emb, in_emb, ub, ipb, inb)
+                    loss = self.criterion(embeddings_dict, batch, self.column_names)
                     accum_loss += loss.item()
 
                     # gradient of loss

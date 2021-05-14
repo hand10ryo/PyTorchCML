@@ -12,42 +12,44 @@ class LogitPairwiseLoss(BasePairwiseLoss):
         self.LogSigmoid = nn.LogSigmoid()
 
     def forward(
-        self,
-        user_emb: torch.Tensor,
-        pos_item_emb: torch.Tensor,
-        neg_item_emb: torch.Tensor,
-        user_bias: torch.Tensor,
-        pos_item_bias: torch.Tensor,
-        neg_item_bias: torch.Tensor,
+        self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """
+        """Method of forwarding loss
+
         Args:
-            user_emb : embeddings of user size (n_batch, d)
-            pos_item_emb : embeddings of positive item size (n_batch, d)
-            neg_item_emb : embeddings of negative item size (n_batch, n_neg_samples, d)
-            user_bias : bias of user size (n_batch, 1)
-            pos_item_bias : bias of positive item size (n_batch, 1)
-            neg_item_bias : bias of negative item size (n_batch, n_neg_samples, 1)
+            embeddings_dict (dict): A dictionary of embddings which has following key and values
+                user_embedding : embeddings of user size (n_batch, d)
+                pos_item_embedding : embeddings of positive item size (n_batch, d)
+                neg_item_embedding : embeddings of negative item size (n_batch, n_neg_samples, d)
+                user_bias : bias of user size (n_batch, 1)
+                pos_item_bias : bias of positive item size (n_batch, 1)
+                neg_item_bias : bias of negative item size (n_batch, n_neg_samples)
+
+            batch (torch.Tensor) : A tensor of batch size (n_batch, *).
+            column_names (dict) : A dictionary that maps names to indices of rows of data.
         """
-        embeddings_dict = {
-            "user_emb": user_emb,  # (B, d)
-            "pos_item_emb": pos_item_emb,  # (B, d)
-            "neg_item_emb": neg_item_emb,  # (B, N, d)
-            "user_bias": user_bias,  # (B, 1)
-            "pos_item_bias": pos_item_bias,  # (B, 1)
-            "neg_item_bias": neg_item_bias,  # (B, N, 1)
-        }
 
-        n_batch = user_emb.shape[0]
+        n_batch = embeddings_dict["user_embedding"].shape[0]
+        n_neg = embeddings_dict["neg_item_bias"].shape[1]
         n_pos = 1
-        n_neg = neg_item_emb.shape[1]
-        neg_item_bias = neg_item_bias.reshape(n_batch, n_neg)
 
-        pos_inner = torch.einsum("nd,nd->n", user_emb, pos_item_emb)
-        neg_inner = torch.einsum("nd,njd->nj", user_emb, neg_item_emb)
+        pos_inner = torch.einsum(
+            "nd,nd->n",
+            embeddings_dict["user_embedding"],
+            embeddings_dict["pos_item_embedding"],
+        )
 
-        pos_y_hat = pos_inner + (user_bias + pos_item_bias).reshape(-1)
-        neg_y_hat = neg_inner + user_bias + neg_item_bias
+        neg_inner = torch.einsum(
+            "nd,njd->nj",
+            embeddings_dict["user_embedding"],
+            embeddings_dict["neg_item_embedding"],
+        )
+
+        pos_bias = embeddings_dict["user_bias"] + embeddings_dict["pos_item_bias"]
+        pos_y_hat = pos_inner + pos_bias.reshape(-1)
+
+        neg_bias = embeddings_dict["user_bias"] + embeddings_dict["neg_item_bias"]
+        neg_y_hat = neg_inner + neg_bias
 
         pos_loss = -nn.LogSigmoid()(pos_y_hat).sum()
         neg_loss = -nn.LogSigmoid()(-neg_y_hat).sum()

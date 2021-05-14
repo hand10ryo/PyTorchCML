@@ -28,20 +28,20 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         loss = [[10], [1]]
         avg_loss = 5.5
         """
-        user_emb = torch.ones(3, 5)
-        pos_item_emb = torch.ones(3, 5) * 2
-        neg_item_emb = torch.ones(3, 2, 5)
-
-        user_bias = torch.zeros(3, 1)
-        pos_item_bias = torch.zeros(3, 1) * 2
-        neg_item_bias = torch.zeros(3, 2, 1)
+        embeddings_dict = {
+            "user_embedding": torch.ones(3, 5),
+            "pos_item_embedding": torch.ones(3, 5) * 2,
+            "neg_item_embedding": torch.ones(3, 2, 5),
+            "user_bias": torch.zeros(3, 1),
+            "pos_item_bias": torch.zeros(3, 1) * 2,
+            "neg_item_bias": torch.zeros(3, 2),
+        }
+        batch = torch.ones([3, 2])
+        column_names = {"user_id": 0, "item_id": 1}
 
         # without regularizer
         criterion = LogitPairwiseLoss()
-        loss = criterion(
-            user_emb, pos_item_emb, neg_item_emb,
-            user_bias, pos_item_bias, neg_item_bias
-        ).item()
+        loss = criterion(embeddings_dict, batch, column_names).item()
 
         self.assertGreater(loss, 0)
         self.assertAlmostEqual(loss, 3.3378, places=3)
@@ -49,13 +49,10 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         # with regularizer
         regs = [SampleRegularizer()]
         criterion = LogitPairwiseLoss(regularizers=regs)
-        loss = criterion(
-            user_emb, pos_item_emb, neg_item_emb,
-            user_bias, pos_item_bias, neg_item_bias
-        ).item()
+        loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
         self.assertAlmostEqual(loss, 6.3378, places=3)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

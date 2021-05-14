@@ -17,31 +17,38 @@ class TestLogitMatrixFactorization(unittest.TestCase):
             n_dim=10,
         )
 
-        u_emb, ip_emb, in_emb, ub, ipb, inb = model(users, pos_items, neg_items)
+        embeddings_dict = model(users, pos_items, neg_items)
+
+        user_embedding = embeddings_dict["user_embedding"]
+        pos_item_embedding = embeddings_dict["pos_item_embedding"]
+        neg_item_embedding = embeddings_dict["neg_item_embedding"]
+        user_bias = embeddings_dict["user_bias"]
+        pos_item_bias = embeddings_dict["pos_item_bias"]
+        neg_item_bias = embeddings_dict["neg_item_bias"]
 
         # user_emb shape
-        shape = u_emb.shape
+        shape = user_embedding.shape
         self.assertEqual(shape, (2, 10))
 
         # pos_item_emb shape
-        shape = ip_emb.shape
+        shape = pos_item_embedding.shape
         self.assertEqual(shape, (2, 10))
 
         # neg_item_emb shape
-        shape = in_emb.shape
+        shape = neg_item_embedding.shape
         self.assertEqual(shape, (2, 3, 10))
 
         # user_bias shape
-        shape = ub.shape
+        shape = user_bias.shape
         self.assertEqual(shape, (2, 1))
 
         # pos_item_bias shape
-        shape = ipb.shape
+        shape = pos_item_bias.shape
         self.assertEqual(shape, (2, 1))
 
         # neg_item_bias shape
-        shape = inb.shape
-        self.assertEqual(shape, (2, 3, 1))
+        shape = neg_item_bias.shape
+        self.assertEqual(shape, (2, 3))
 
     def test_predict(self):
         user_item_pairs = torch.LongTensor([[0, 0], [1, 1], [2, 2]])

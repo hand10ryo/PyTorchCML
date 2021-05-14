@@ -51,7 +51,7 @@ class BaseEmbeddingModel(nn.Module):
 
     def forward(
         self, users: torch.Tensor, pos_items: torch.Tensor, neg_items: torch.Tensor
-    ) -> torch.Tensor:
+    ) -> dict:
         """Method of forwarding which returns embeddings
 
         Args:
@@ -63,7 +63,7 @@ class BaseEmbeddingModel(nn.Module):
             NotImplementedError: [description]
 
         Returns:
-            torch.Tensor: [description]
+            dict: [description]
         """
         raise NotImplementedError
 

@@ -18,23 +18,27 @@ class TestSumTripletLoss(unittest.TestCase):
         """
         test forward
         """
-        user_emb = torch.ones(3, 1, 5)
-        pos_item_emb = torch.ones(3, 1, 5) * 2
-        neg_item_emb = torch.ones(3, 1, 5)
+        embeddings_dict = {
+            "user_embedding": torch.ones(3, 1, 5),
+            "pos_item_embedding": torch.ones(3, 1, 5) * 2,
+            "neg_item_embedding": torch.ones(3, 1, 5),
+        }
+        batch = torch.ones([3, 2])
+        column_names = {"user_id": 0, "item_id": 1}
 
         # without regularizer
         criterion = SumTripletLoss(margin=1)
-        loss = criterion(user_emb, pos_item_emb, neg_item_emb).item()
+        loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
         self.assertEqual(loss, 6)
 
         # with regularizer
         regs = [SampleRegularizer()]
         criterion = SumTripletLoss(margin=1, regularizers=regs)
-        loss = criterion(user_emb, pos_item_emb, neg_item_emb).item()
+        loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
         self.assertEqual(loss, 9)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
