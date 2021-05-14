@@ -6,27 +6,25 @@ from .BaseEmbeddingModel import BaseEmbeddingModel
 class CollaborativeMetricLearning(BaseEmbeddingModel):
     def forward(
         self, users: torch.Tensor, pos_items: torch.Tensor, neg_items: torch.Tensor
-    ) -> torch.Tensor:
+    ) -> dict:
         """
         Args:
-            users : tensor of user indices size (n_batch, 1).
-            pos_items : tensor of item indices size (n_batch, 1),
+            users : tensor of user indices size (n_batch).
+            pos_items : tensor of item indices size (n_batch, 1)
             neg_items : tensor of item indices size (n_batch, n_neg_samples)
 
         Returns:
-            user_emb : embeddings of user size (n_batch, 1, d)
-            pos_item_emb : embeddings of positive items size (n_batch, 1, d)
-            neg_item_emb : embeddings of negative items size (n_batch, n_neg_samples, d)
+            dict: A dictionary of embeddings.
         """
 
         # get enmbeddigs
-        user_emb = self.user_embedding(users)
-        pos_item_emb = self.item_embedding(pos_items)
-        neg_item_emb = self.item_embedding(neg_items)
+        embeddings_dict = {
+            "user_embedding": self.user_embedding(users),
+            "pos_item_embedding": self.item_embedding(pos_items),
+            "neg_item_embedding": self.item_embedding(neg_items),
+        }
 
-        # compute distance  dist = torch.cdist(u_emb, i_emb)
-
-        return user_emb, pos_item_emb, neg_item_emb
+        return embeddings_dict
 
     def spreadout_distance(self, pos_items: torch.Tensor, neg_itmes: torch.Tensor):
         """
