@@ -17,16 +17,16 @@ class LogitPairwiseLoss(BasePairwiseLoss):
         """Method of forwarding loss
 
         Args:
-            embeddings_dict (dict): A dictionary of embddings which has following key and values
-                user_embedding : embeddings of user size (n_batch, d)
-                pos_item_embedding : embeddings of positive item size (n_batch, d)
-                neg_item_embedding : embeddings of negative item size (n_batch, n_neg_samples, d)
-                user_bias : bias of user size (n_batch, 1)
-                pos_item_bias : bias of positive item size (n_batch, 1)
-                neg_item_bias : bias of negative item size (n_batch, n_neg_samples)
+            embeddings_dict (dict): A dictionary of embddings which has following key and values.
+                user_embedding : embeddings of user, size (n_batch, d)
+                pos_item_embedding : embeddings of positive item, size (n_batch, d)
+                neg_item_embedding : embeddings of negative item, size (n_batch, n_neg_samples, d)
+                user_bias : bias of user, size (n_batch, 1)
+                pos_item_bias : bias of positive item, size (n_batch, 1)
+                neg_item_bias : bias of negative item, size (n_batch, n_neg_samples)
 
-            batch (torch.Tensor) : A tensor of batch size (n_batch, *).
-            column_names (dict) : A dictionary that maps names to indices of rows of data.
+            batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
+            column_names (dict) : A dictionary that maps names to indices of rows of batch.
         """
 
         n_batch = embeddings_dict["user_embedding"].shape[0]

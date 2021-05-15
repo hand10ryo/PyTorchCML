@@ -15,12 +15,12 @@ class MinTripletLoss(BaseTripletLoss):
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
-                user_embedding : embeddings of user size (n_batch, 1, d)
-                pos_item_embedding : embeddings of positive item size (n_batch, 1, d)
-                neg_item_embedding : embeddings of negative item size (n_batch, n_neg_samples, d)
+                user_embedding : embeddings of user, size (n_batch, d)
+                pos_item_embedding : embeddings of positive item, size (n_batch, d)
+                neg_item_embedding : embeddings of negative item, size (n_batch, n_neg_samples, d)
 
-            batch (torch.Tensor) : A tensor of batch size (n_batch, *).
-            column_names (dict) : A dictionary that maps names to indices of rows of data.
+            batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
+            column_names (dict) : A dictionary that maps names to indices of rows of batch.
 
         Return:
             torch.Tensor: loss,  L = Σ [m + pos_dist^2 - min(neg_dist)^2]
