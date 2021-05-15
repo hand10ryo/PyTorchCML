@@ -15,8 +15,8 @@ class BasePairwiseLoss(nn.Module):
         """
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
-            batch (torch.Tensor) : A tensor of batch size (n_batch, *).
-            column_names (dict) : A dictionary that maps names to indices of rows of data.
+            batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
+            column_names (dict) : A dictionary that maps names to indices of rows of batch.
 
         Raises:
             NotImplementedError: [description]
@@ -26,18 +26,18 @@ class BasePairwiseLoss(nn.Module):
 
          ---   example code   ---
 
-        embeddings_dict = {
-            "user_emb": user_emb,
-            "pos_item_emb": pos_item_emb,
-            "neg_item_emb": neg_item_emb,
-            "user_bias": user_bias,
-            "pos_item_bias": pos_item_bias,
-            "neg_item_bias": neg_item_bias,
-        }
+        # embeddings_dict = {
+        #   "user_embedding": user_emb,
+        #    "pos_item_embedding": pos_item_emb,
+        #    "neg_item_embedding": neg_item_emb,
+        #    "user_bias": user_bias,
+        #    "pos_item_bias": pos_item_bias,
+        #    "neg_item_bias": neg_item_bias,
+        #}
 
-        # loss = loss_function(embeddings_dict)
-        # reg = self.regularize(embeddings_dict)
-        # return loss + reg
+        loss = loss_function(embeddings_dict, batch, column_names)
+        reg = self.regularize(embeddings_dict)
+        return loss + reg
         """
 
         raise NotImplementedError
