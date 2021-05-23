@@ -20,6 +20,7 @@ class BaseSampler:
         batch_size: int = 256,
         n_neg_samples: int = 10,
         strict_negative: bool = False,
+        neutral: torch.Tensor = torch.Tensor([]),
     ):
         """Class of Base Sampler for get positive and negative batch.
         Args:
@@ -40,8 +41,10 @@ class BaseSampler:
 
         self.train_set = train_set
         train_set_cpu = train_set.cpu()
-        self.train_matrix = csr_matrix(
-            (np.ones(train_set.shape[0]), (train_set_cpu[:, 0], train_set_cpu[:, 1])),
+        neutral_cpu = neutral.cpu()
+        not_negative = torch.cat([train_set_cpu, neutral_cpu])
+        self.not_negative_flag = csr_matrix(
+            (np.ones(not_negative.shape[0]), (not_negative[:, 0], not_negative[:, 1])),
             [n_user, n_item],
         )
         self.n_neg_samples = n_neg_samples
@@ -120,11 +123,10 @@ class BaseSampler:
         """
 
         if self.negative_weighted_by_model and self.strict_negative:
-            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
-            mask = 1 - pos_item_flag.to(self.device)
+            flag = torch.Tensor(self.not_negative_flag[users.to("cpu")].A)
+            mask = 1 - flag.to(self.device)
             weight = self.neg_weight_model.get_item_weight(users)
             weight *= mask
-
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
 
@@ -134,8 +136,8 @@ class BaseSampler:
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
 
         elif not self.negative_weighted_by_model and self.strict_negative:
-            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
-            mask = 1 - pos_item_flag.to(self.device)
+            flag = torch.Tensor(self.not_negative_flag[users.to("cpu")].A)
+            mask = 1 - flag.to(self.device)
             weight = mask * self.neg_item_weight
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
