@@ -20,6 +20,7 @@ class BaseSampler:
         batch_size: int = 256,
         n_neg_samples: int = 10,
         strict_negative: bool = False,
+        neutral: torch.Tensor = torch.Tensor([]),
     ):
         """Class of Base Sampler for get positive and negative batch.
         Args:
@@ -37,15 +38,15 @@ class BaseSampler:
             NotImplementedError: [description]
             NotImplementedError: [description]
         """
-
+        # set positive pairs
         self.train_set = train_set
-        train_set_cpu = train_set.cpu()
-        self.train_matrix = csr_matrix(
-            (np.ones(train_set.shape[0]), (train_set_cpu[:, 0], train_set_cpu[:, 1])),
-            [n_user, n_item],
-        )
+
+        # set some hyperparameters
         self.n_neg_samples = n_neg_samples
         self.batch_size = batch_size
+        self.strict_negative = strict_negative
+        self.two_stage = False
+
         if n_user is None:
             self.n_user = np.unique(train_set[:, 0].cpu()).shape[0]
         else:
@@ -55,13 +56,23 @@ class BaseSampler:
             self.n_item = np.unique(train_set[:, 1].cpu()).shape[0]
         else:
             self.n_item = n_item
-        self.device = device
-        self.strict_negative = strict_negative
-        self.two_stage = False
+
+        # set flag matrix whose element indicates the pair is not negative.
+        train_set_cpu = train_set.cpu()
+        neutral_cpu = neutral.cpu()
+        not_negative = torch.cat([train_set_cpu, neutral_cpu])
+        self.not_negative_flag = csr_matrix(
+            (np.ones(not_negative.shape[0]), (not_negative[:, 0], not_negative[:, 1])),
+            [n_user, n_item],
+        )
+        self.not_negative_flag.sum_duplicates()
+        self.not_negative_flag.data[:] = 1
 
         # device
         if device is None:
-            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device = device
 
         # set pos weight
         if pos_weight is not None:  # weighted
@@ -80,13 +91,13 @@ class BaseSampler:
         else:  # uniform
             pos_weight_pair = torch.ones(train_set.shape[0])
 
-        self.pos_weight_pair = torch.Tensor(pos_weight_pair).to(device)
+        self.pos_weight_pair = torch.Tensor(pos_weight_pair).to(self.device)
         self.pos_sampler = Categorical(probs=self.pos_weight_pair)
 
         # set neg weight
-        if neg_weight is None:  # uniorm
+        if neg_weight is None:  # uniform
             self.negative_weighted_by_model = False
-            self.neg_item_weight = torch.ones(self.n_item).to(device)
+            self.neg_item_weight = torch.ones(self.n_item).to(self.device)
 
         elif isinstance(neg_weight, BaseEmbeddingModel):  # user-item weighted
             self.negative_weighted_by_model = True
@@ -94,7 +105,7 @@ class BaseSampler:
 
         elif len(neg_weight) == self.n_item:  # item weighted
             self.negative_weighted_by_model = False
-            self.neg_item_weight = torch.Tensor(neg_weight).to(device)
+            self.neg_item_weight = torch.Tensor(neg_weight).to(self.device)
 
         else:
             raise NotImplementedError
@@ -120,11 +131,10 @@ class BaseSampler:
         """
 
         if self.negative_weighted_by_model and self.strict_negative:
-            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
-            mask = 1 - pos_item_flag.to(self.device)
+            flag = torch.Tensor(self.not_negative_flag[users.to("cpu")].A)
+            mask = 1 - flag.to(self.device)
             weight = self.neg_weight_model.get_item_weight(users)
             weight *= mask
-
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
 
@@ -134,8 +144,8 @@ class BaseSampler:
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
 
         elif not self.negative_weighted_by_model and self.strict_negative:
-            pos_item_flag = torch.Tensor(self.train_matrix[users.to("cpu")].A)
-            mask = 1 - pos_item_flag.to(self.device)
+            flag = torch.Tensor(self.not_negative_flag[users.to("cpu")].A)
+            mask = 1 - flag.to(self.device)
             weight = mask * self.neg_item_weight
             neg_sampler = Categorical(probs=weight)
             neg_samples = neg_sampler.sample([self.n_neg_samples]).T
