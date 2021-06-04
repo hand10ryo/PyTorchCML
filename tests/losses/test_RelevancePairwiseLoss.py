@@ -45,14 +45,14 @@ class TestRelevancePairwiseLoss(unittest.TestCase):
         loss = criterion(embeddings_dict, batch, column_names).item()
 
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 26 / 3, places=3)
+        self.assertAlmostEqual(loss, 0.5, places=3)
 
         # with regularizer
         regs = [SampleRegularizer()]
         criterion = RelevancePairwiseLoss(regularizers=regs, delta="mse")
         loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 26 / 3 + 3, places=3)
+        self.assertAlmostEqual(loss, 3.5, places=3)
 
 
 if __name__ == "__main__":
