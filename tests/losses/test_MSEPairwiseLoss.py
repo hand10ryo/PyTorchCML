@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch import nn
 
-from PytorchCML.losses import RelevancePairwiseLoss
+from PytorchCML.losses import MSEPairwiseLoss
 
 
 class SampleRegularizer(nn.Module):
@@ -11,7 +11,7 @@ class SampleRegularizer(nn.Module):
         return torch.ones(3).sum()
 
 
-class TestRelevancePairwiseLoss(unittest.TestCase):
+class TestMSEPairwiseLoss(unittest.TestCase):
     """Test LogitPairwiseLoss"""
 
     def test_forward(self):
@@ -37,22 +37,22 @@ class TestRelevancePairwiseLoss(unittest.TestCase):
             "pos_item_bias": torch.zeros(3, 1) * 2,
             "neg_item_bias": -torch.zeros(3, 2),
         }
-        batch = torch.ones([3, 3])
-        column_names = {"user_id": 0, "item_id": 1, "pscore": 2}
+        batch = torch.ones([3, 2])
+        column_names = {"user_id": 0, "item_id": 1}
 
         # without regularizer
-        criterion = RelevancePairwiseLoss(delta="mse")
+        criterion = MSEPairwiseLoss()
         loss = criterion(embeddings_dict, batch, column_names).item()
 
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 0.5, places=3)
+        self.assertAlmostEqual(loss, 0.25, places=3)
 
         # with regularizer
         regs = [SampleRegularizer()]
-        criterion = RelevancePairwiseLoss(regularizers=regs, delta="mse")
+        criterion = MSEPairwiseLoss(regularizers=regs)
         loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 3.5, places=3)
+        self.assertAlmostEqual(loss, 3.25, places=3)
 
 
 if __name__ == "__main__":
