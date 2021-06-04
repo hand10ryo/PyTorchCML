@@ -1,32 +1,10 @@
 import torch
-from torch import nn
 
 from .BasePairwiseLoss import BasePairwiseLoss
 
 
-class RelevancePairwiseLoss(BasePairwiseLoss):
-    """Class of loss for Relevance Matrix Factorization
-
-    See below reference for detail.
-
-    Y. Saito, S. Yaginuma, Y. Nishino, H. Sakata, and K. Nakata,
-    “Unbiased recommender learning from missing-not-at-random implicit feedback,” in WSDM, 2020
-
-    """
-
-    def __init__(self, regularizers: list = [], delta: str = "logistic"):
-        super().__init__(regularizers)
-        self.LogSigmoid = nn.LogSigmoid()
-        if delta == "logistic":
-            self.delta_pos = lambda x: -nn.LogSigmoid()(x)
-            self.delta_neg = lambda x: -nn.LogSigmoid()(-x)
-
-        elif delta == "mse":
-            self.delta_pos = lambda x: (1 - x) ** 2
-            self.delta_neg = lambda x: x ** 2
-
-        else:
-            raise NotImplementedError
+class MSEPairwiseLoss(BasePairwiseLoss):
+    """Class of loss for MSE in implicit feedback"""
 
     def forward(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
@@ -52,7 +30,6 @@ class RelevancePairwiseLoss(BasePairwiseLoss):
         n_batch = embeddings_dict["user_embedding"].shape[0]
         n_neg = embeddings_dict["neg_item_bias"].shape[1]
         n_pos = 1
-        pscore = batch[:, column_names["pscore"]]
 
         pos_inner = torch.einsum(
             "nd,nd->n",
@@ -72,11 +49,8 @@ class RelevancePairwiseLoss(BasePairwiseLoss):
         pos_r_hat = pos_inner + pos_bias.reshape(-1)
         neg_r_hat = neg_inner + neg_bias
 
-        pos_loss_pos = self.delta_pos(pos_r_hat) / pscore
-        pos_loss_neg = 1 - self.delta_neg(pos_r_hat) / pscore
-        pos_loss = (pos_loss_pos + pos_loss_neg).sum()
-
-        neg_loss = self.delta_neg(neg_r_hat).sum()
+        pos_loss = ((1 - torch.sigmoid(pos_r_hat)) ** 2).sum()
+        neg_loss = (torch.sigmoid(neg_r_hat) ** 2).sum()
 
         loss = (pos_loss + neg_loss) / (n_batch * (n_pos + n_neg))
         reg = self.regularize(embeddings_dict)
