@@ -30,12 +30,12 @@ class TestRelevancePairwiseLoss(unittest.TestCase):
         avg_loss = 26 / 3
         """
         embeddings_dict = {
-            "user_embedding": torch.ones(3, 5),
-            "pos_item_embedding": torch.ones(3, 5) * 2,
-            "neg_item_embedding": -torch.ones(3, 2, 5),
-            "user_bias": torch.ones(3, 1),
-            "pos_item_bias": torch.ones(3, 1) * 2,
-            "neg_item_bias": -torch.ones(3, 2),
+            "user_embedding": torch.zeros(3, 5),
+            "pos_item_embedding": torch.zeros(3, 5) * 2,
+            "neg_item_embedding": -torch.zeros(3, 2, 5),
+            "user_bias": torch.zeros(3, 1),
+            "pos_item_bias": torch.zeros(3, 1) * 2,
+            "neg_item_bias": -torch.zeros(3, 2),
         }
         batch = torch.ones([3, 3])
         column_names = {"user_id": 0, "item_id": 1, "pscore": 2}
@@ -45,14 +45,14 @@ class TestRelevancePairwiseLoss(unittest.TestCase):
         loss = criterion(embeddings_dict, batch, column_names).item()
 
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 26 / 3, places=3)
+        self.assertAlmostEqual(loss, 0.5, places=3)
 
         # with regularizer
         regs = [SampleRegularizer()]
         criterion = RelevancePairwiseLoss(regularizers=regs, delta="mse")
         loss = criterion(embeddings_dict, batch, column_names).item()
         self.assertGreater(loss, 0)
-        self.assertAlmostEqual(loss, 26 / 3 + 3, places=3)
+        self.assertAlmostEqual(loss, 3.5, places=3)
 
 
 if __name__ == "__main__":
