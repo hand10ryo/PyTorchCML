@@ -8,9 +8,8 @@ class GlobalOrthogonalRegularizer(BaseRegularizer):
     """Class of Global Orthogonal Regularization"""
 
     def __init__(self, weight: float = 1e-2):
-        super().__init__()
+        super().__init__(weight)
         self.ReLU = nn.ReLU()
-        self.weight = weight
 
     def forward(self, embeddings_dict: dict) -> torch.Tensor:
         """Method of comuting regularize term
