@@ -22,8 +22,8 @@ class RelevancePairwiseLoss(BasePairwiseLoss):
             self.delta_neg = lambda x: -nn.LogSigmoid()(-x)
 
         elif delta == "mse":
-            self.delta_pos = lambda x: (1 - x) ** 2
-            self.delta_neg = lambda x: x ** 2
+            self.delta_pos = lambda x: (1 - torch.sigmoid(x)) ** 2
+            self.delta_neg = lambda x: torch.sigmoid(x) ** 2
 
         else:
             raise NotImplementedError
