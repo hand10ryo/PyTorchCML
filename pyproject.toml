@@ -7,6 +7,9 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/hand10ryo/PytorchCML"
 repository = "https://github.com/hand10ryo/PytorchCML"
+packages = [
+    { include = "PytorchCML" }
+]
 
 [tool.poetry-dynamic-versioning]
 enable = true
