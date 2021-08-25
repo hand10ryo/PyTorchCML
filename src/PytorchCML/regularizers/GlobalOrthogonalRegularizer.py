@@ -5,16 +5,14 @@ from .BaseRegularizer import BaseRegularizer
 
 
 class GlobalOrthogonalRegularizer(BaseRegularizer):
-    """ Class of Global Orthogonal Regularization
-    """
+    """Class of Global Orthogonal Regularization"""
 
     def __init__(self, weight: float = 1e-2):
-        super().__init__()
+        super().__init__(weight)
         self.ReLU = nn.ReLU()
-        self.weight = weight
 
     def forward(self, embeddings_dict: dict) -> torch.Tensor:
-        """ Method of comuting regularize term
+        """Method of comuting regularize term
 
         Args:
             embeddings_dict (dict): dictionary of embeddings which has pos_item_emb and neg_item_emb
@@ -23,8 +21,8 @@ class GlobalOrthogonalRegularizer(BaseRegularizer):
             torch.Tensor: term of regularize
         """
 
-        pos_item_emb = embeddings_dict["pos_item_emb"]
-        neg_item_emb = embeddings_dict["neg_item_emb"]
+        pos_item_emb = embeddings_dict["pos_item_embedding"]
+        neg_item_emb = embeddings_dict["neg_item_embedding"]
 
         B, N, d = neg_item_emb.shape
         Q = B * N

@@ -33,8 +33,8 @@ class CMLTrainer(BaseTrainer):
                 for b in pbar:
                     # batch sampling
                     batch = self.sampler.get_pos_batch()
-                    users = batch[:, 0:1]
-                    pos_items = batch[:, 1:]
+                    users = batch[:, self.column_names["user_id"]].reshape(-1, 1)
+                    pos_items = batch[:, self.column_names["item_id"]].reshape(-1, 1)
 
                     if self.sampler.two_stage:
                         neg_candidates = self.sampler.get_and_set_candidates()
@@ -47,12 +47,10 @@ class CMLTrainer(BaseTrainer):
                     self.model.zero_grad()
 
                     # compute distance
-                    user_emb, pos_item_emb, neg_item_emb = self.model(
-                        users, pos_items, neg_items
-                    )
+                    embeddings_dict = self.model(users, pos_items, neg_items)
 
                     # compute loss
-                    loss = self.criterion(user_emb, pos_item_emb, neg_item_emb)
+                    loss = self.criterion(embeddings_dict, batch, self.column_names)
                     accum_loss += loss.item()
 
                     # gradient of loss

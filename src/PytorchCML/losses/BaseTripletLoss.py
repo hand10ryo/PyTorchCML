@@ -18,17 +18,14 @@ class BaseTripletLoss(nn.Module):
         self.regularizers = regularizers
 
     def forward(
-        self,
-        user_emb: torch.Tensor,
-        pos_item_emb: torch.Tensor,
-        neg_item_emb: torch.Tensor,
+        self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
         """Method of forward
 
         Args:
-            user_emb : embeddings of user size (n_batch, 1, d)
-            pos_item_emb : embeddings of positive item size (n_batch, 1, d)
-            neg_item_emb : embeddings of negative item size (n_batch, n_neg_samples, d)
+            embeddings_dict (dict): A dictionary of embddings which has following key and values.
+            batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
+            column_names (dict) : A dictionary that maps names to indices of rows of batch.
 
         Raises:
             NotImplementedError: [description]
@@ -39,14 +36,13 @@ class BaseTripletLoss(nn.Module):
 
         ---- example code ---
 
-        embeddings_dict = {
-            "user_emb": user_emb,
-            "pos_item_emb": pos_item_emb,
-            "neg_item_emb": neg_item_emb,
-        }
+        # embeddings_dict = {
+        #   "user_embedding": user_emb,
+        #    "pos_item_embedding": pos_item_emb,
+        #    "neg_item_embedding": neg_item_emb,
+        #}
 
-
-        loss = some_function(user_emb, pos_item_emb, neg_item_emb)
+        loss = some_function(embeddings_dict, batch, column_names)
         reg = self.regularize(embeddings_dict)
         return loss + reg
 

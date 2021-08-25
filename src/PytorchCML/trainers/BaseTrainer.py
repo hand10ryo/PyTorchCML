@@ -17,6 +17,7 @@ class BaseTrainer:
         optimizer: optim,
         criterion: Union[BasePairwiseLoss, BaseTripletLoss],
         sampler: BaseSampler,
+        column_names: Optional[dict] = None,
     ):
         """Set components for learning recommend system.
 
@@ -25,11 +26,17 @@ class BaseTrainer:
             optimizer (optim): pytorch optimizer
             criterion (Union[BasePairwiseLoss, BaseTripletLoss]): loss function
             sampler (BaseSampler): sampler
+            column_names (Optional[dict]): sampler
         """
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion
         self.sampler = sampler
+
+        if column_names is not None:
+            self.column_names = column_names
+        else:
+            self.column_names = {"user_id": 0, "item_id": 1}
 
     def fit(
         self,

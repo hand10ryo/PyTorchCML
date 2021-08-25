@@ -85,10 +85,10 @@ class TestTwoStageSampler(unittest.TestCase):
         sampler = TwoStageSampler(
             train_set,
             n_user=3,
-            n_item=5,
+            n_item=15,
             batch_size=3,
             n_neg_samples=2,
-            n_neg_candidates=3,
+            n_neg_candidates=5,
             strict_negative=True,
         )
         pos_batch = sampler.get_pos_batch()
@@ -96,7 +96,7 @@ class TestTwoStageSampler(unittest.TestCase):
 
         # two stage
         sampler.get_and_set_candidates()
-        dist = torch.ones(3, 3)
+        dist = torch.ones(3, 5)
         sampler.set_candidates_weight(dist, 3)
         neg_batch = sampler.get_neg_batch(users.reshape(-1))
 
@@ -109,7 +109,7 @@ class TestTwoStageSampler(unittest.TestCase):
         item_id_min = neg_batch.min().item()
         item_id_max = neg_batch.max().item()
         self.assertGreaterEqual(item_id_min, 0)
-        self.assertGreaterEqual(5, item_id_max)
+        self.assertGreaterEqual(15, item_id_max)
 
         # strict negative
         for k, u in enumerate(users):
