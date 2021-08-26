@@ -60,7 +60,7 @@ Movielens 100k データセットを用いた jupyter notebook の例が[こち�
 
 これらのモジュールは以下の図のような関係があります。
 
-![Untitled](https://github.com/hand10ryo/PytorchCML/images/diagram.png)
+![Untitled](https://github.com/hand10ryo/PytorchCML/blob/main/images/diagram.png)
 
 最も単純化した実装は以下の通りです。
 
