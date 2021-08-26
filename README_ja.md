@@ -129,17 +129,9 @@ losses は埋め込みベクトル学習のための損失関数を司るモジ�
 
 損失関数は主に、PairwiseLoss と TripletLoss に分けられます。
 
-PairwiseLoss は、ユーザーアイテムペア<img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%28u%2C+i%29" 
-alt="(u, i)">ごとの損失です。
+PairwiseLoss は、ユーザーアイテムペア (u,i) ごとの損失です。
 
-TripletLoss は、ポジティブなユーザーアイテムペア<img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%28u%2C+i_p%29" 
-alt="(u, i_p)">に対してネガティブなアイテム<img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+i_n" 
-alt="i_n">を加えた<img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%28u%2C+i_p%2C+i_n%29" 
-alt="(u, i_p, i_n)">ごとの損失です。
+TripletLoss は、ポジティブなユーザーアイテムペア (u, i_p) に対してネガティブなアイテム i_n を加えた (u, i_p, i_n) ごとの損失です。
 
 ## samplers
 
@@ -147,12 +139,8 @@ samplers は学習中のミニバッチのサンプリングを司るモジュ�
 
 sampler が行うサンプリングは２種類あります。
 
-- ポジティブなユーザーアイテムペア <img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+%28u%2C+i_p%29" 
-alt="(u, i_p)"> の抽出
-- ネガティブなアイテム<img src=
-"https://render.githubusercontent.com/render/math?math=%5Ctextstyle+i_n" 
-alt="i_n">の抽出
+- ポジティブなユーザーアイテムペア  (u, i_p)  の抽出
+- ネガティブなアイテム i_n の抽出
 
 デフォルトでは両者のサンプリングを一様ランダムに行います。
 
