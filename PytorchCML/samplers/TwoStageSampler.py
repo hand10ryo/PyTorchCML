@@ -112,7 +112,7 @@ class TwoStageSampler(BaseSampler):
 
         if self.strict_negative:
             pos_item_mask = torch.Tensor(self.not_negative_flag[users.to("cpu")].A)
-            pos_item_mask_candidate = pos_item_mask[:, self.candidates]
+            pos_item_mask_candidate = pos_item_mask[:, self.candidates].to(self.device)
             weight = (1 - pos_item_mask_candidate) * self.candidates_weight
             zero_indices = weight.sum(axis=1) <= 1e-10
             weight[zero_indices.reshape(-1)] = 1
