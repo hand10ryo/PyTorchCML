@@ -1,10 +1,10 @@
 # PytorchCML
 
-Pytorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を pytorch で実装したライブラリです。
+PyTorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
 
 English version of README is [here](https://github.com/hand10ryo/PyTorchCML/blob/main/README.md)
 
-# CMLとは
+# **CMLとは**
 
 CML は metric learning と MF を組み合わせたアルゴリズムで、ユーザー×アイテム、ドキュメント × 単語 など 2つの集合の要素をそれらの関係データを用いて同じ距離空間に埋め込むことを可能にします。
 
@@ -113,9 +113,9 @@ CMFはベクトル距離、MFの内積で関係性を表現します。
 
 ```python
 model = models.LogitMatrixFactorization(
-    n_user, n_item, n_dim, max_norm=5,
-    user_embedding_init = torch.Tensor(U),   # shape = (n_user, n_dim)
-    item_embedding_init = torch.Tensor(V.T), # shape = (n_dim, n_item)
+  n_user, n_item, n_dim, max_norm=5,
+  user_embedding_init = torch.Tensor(U),   # shape = (n_user, n_dim)
+  item_embedding_init = torch.Tensor(V.T), # shape = (n_dim, n_item)
 ).to(device)
 ```
 
@@ -147,8 +147,8 @@ sampler が行うサンプリングは２種類あります。
 ```python
 item_ids, item_popularity = np.unique(train_set[:,1], return_counts=True)
 sampler = samplers.BaseSampler(
-		train_set_torch, neg_weight = item_popularity,
-		n_user, n_item, device=device
+	train_set_torch, neg_weight = item_popularity,
+	n_user, n_item, device=device
 )
 ```
 
@@ -175,14 +175,14 @@ test_set_torch = torch.LongTensor(test_set).to(device)
 
 # define metrics and evaluator
 score_function_dict = {
-    "nDCG" : evaluators.ndcg,
-    "MAP" : evaluators.average_precision,
-    "Recall": evaluators.recall
+  "nDCG" : evaluators.ndcg,
+  "MAP" : evaluators.average_precision,
+  "Recall": evaluators.recall
 }
 evaluator = evaluators.UserwiseEvaluator(
-		test_set_torch, 
-		score_function_dict, 
-		ks=[3,5]
+	test_set_torch, 
+	score_function_dict, 
+	ks=[3,5]
 )
 
 # calc scores
@@ -205,9 +205,9 @@ evaluators モジュールにはその関数として、nDCG@k, MAP@k, Recall@k 
 
 ```python
 valid_evaluator = evaluators.UserwiseEvaluator(
-		test_set_torch, # eval set
-		score_function_dict, 
-		ks=[3,5]
+	test_set_torch, # eval set
+	score_function_dict, 
+	ks=[3,5]
 )
 trainer.fit(n_batch=50, n_epoch=15, valid_evaluator = valid_evaluator)
 ```
@@ -232,7 +232,7 @@ criterion = losses.MinTripletLoss(margin=1, regularizers=regs).to(device)
 pip install poetry
 pip install poetry-dynamic-versioning
 
-# poetry install
+poetry install
 poetry build
 # poetry lock
 ```
