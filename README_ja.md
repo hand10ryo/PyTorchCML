@@ -2,6 +2,8 @@
 
 Pytorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を pytorch で実装したライブラリです。
 
+English version of README is [here](https://github.com/hand10ryo/PyTorchCML/blob/main/README.md)
+
 # CMLとは
 
 CML は metric learning と MF を組み合わせたアルゴリズムで、ユーザー×アイテム、ドキュメント × 単語 など 2つの集合の要素をそれらの関係データを用いて同じ距離空間に埋め込むことを可能にします。
