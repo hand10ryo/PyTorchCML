@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from PytorchCML.models import CollaborativeMetricLearning
+from PyTorchCML.models import CollaborativeMetricLearning
 
 
 class TestCollaborativeMetricLearning(unittest.TestCase):

@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from PytorchCML.models import LogitMatrixFactorization
+from PyTorchCML.models import LogitMatrixFactorization
 
 
 class TestLogitMatrixFactorization(unittest.TestCase):

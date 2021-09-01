@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch import nn
 
-from PytorchCML.losses import RelevancePairwiseLoss
+from PyTorchCML.losses import RelevancePairwiseLoss
 
 
 class SampleRegularizer(nn.Module):

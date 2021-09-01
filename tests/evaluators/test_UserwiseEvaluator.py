@@ -3,8 +3,8 @@ import unittest
 import torch
 import numpy as np
 
-from PytorchCML.evaluators import UserwiseEvaluator, ndcg, average_precision, recall
-from PytorchCML.models import CollaborativeMetricLearning
+from PyTorchCML.evaluators import UserwiseEvaluator, ndcg, average_precision, recall
+from PyTorchCML.models import CollaborativeMetricLearning
 
 
 class TestScoreFunctions(unittest.TestCase):
@@ -86,16 +86,20 @@ class TestUserwiseEvaluator(unittest.TestCase):
     """Test UserwiseEvaluator"""
 
     def test_eval_user(self):
-        score_function_dict = {
-            "nDCG": ndcg,
-            "MAP": average_precision,
-            "Recall": recall
-        }
-        test_set = torch.LongTensor([
-            [0, 1, 1], [0, 3, 1], [0, 4, 0],
-            [1, 0, 0], [1, 2, 1], [1, 4, 1],
-            [2, 0, 1], [2, 1, 0], [2, 2, 1],
-        ])
+        score_function_dict = {"nDCG": ndcg, "MAP": average_precision, "Recall": recall}
+        test_set = torch.LongTensor(
+            [
+                [0, 1, 1],
+                [0, 3, 1],
+                [0, 4, 0],
+                [1, 0, 0],
+                [1, 2, 1],
+                [1, 4, 1],
+                [2, 0, 1],
+                [2, 1, 0],
+                [2, 2, 1],
+            ]
+        )
 
         evaluator = UserwiseEvaluator(test_set, score_function_dict, ks=[2, 3])
         model = CollaborativeMetricLearning(n_user=3, n_item=5, n_dim=10)
@@ -109,21 +113,24 @@ class TestUserwiseEvaluator(unittest.TestCase):
         # columns
         columns = list(df_eval_sub.columns)
         self.assertEqual(
-            columns,
-            ["nDCG@2", "MAP@2", "Recall@2", "nDCG@3", "MAP@3", "Recall@3"]
+            columns, ["nDCG@2", "MAP@2", "Recall@2", "nDCG@3", "MAP@3", "Recall@3"]
         )
 
     def test_score(self):
-        score_function_dict = {
-            "nDCG": ndcg,
-            "MAP": average_precision,
-            "Recall": recall
-        }
-        test_set = torch.LongTensor([
-            [0, 1, 0], [0, 3, 1], [0, 4, 0],
-            [1, 0, 0], [1, 2, 0], [1, 4, 1],
-            [2, 0, 1], [2, 1, 0], [2, 2, 0],
-        ])
+        score_function_dict = {"nDCG": ndcg, "MAP": average_precision, "Recall": recall}
+        test_set = torch.LongTensor(
+            [
+                [0, 1, 0],
+                [0, 3, 1],
+                [0, 4, 0],
+                [1, 0, 0],
+                [1, 2, 0],
+                [1, 4, 1],
+                [2, 0, 1],
+                [2, 1, 0],
+                [2, 2, 0],
+            ]
+        )
 
         evaluator = UserwiseEvaluator(test_set, score_function_dict, ks=[2, 3])
         model = CollaborativeMetricLearning(n_user=3, n_item=5, n_dim=10)
@@ -138,8 +145,7 @@ class TestUserwiseEvaluator(unittest.TestCase):
         # columns
         columns = list(df_eval.columns)
         self.assertEqual(
-            columns,
-            ["nDCG@2", "MAP@2", "Recall@2", "nDCG@3", "MAP@3", "Recall@3"]
+            columns, ["nDCG@2", "MAP@2", "Recall@2", "nDCG@3", "MAP@3", "Recall@3"]
         )
 
         # is not null
@@ -155,5 +161,5 @@ class TestUserwiseEvaluator(unittest.TestCase):
         self.assertEqual(m, 6)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
