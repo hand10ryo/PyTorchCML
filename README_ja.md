@@ -1,18 +1,16 @@
-# Pytorch CML
+# PyTorchCML
 
 PyTorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
 
-CML は 一般の metric learning と MF を組み合わせたアルゴリズムで、ユーザー×アイテム、ドキュメント × 単語 などの 2つの集合の要素同士の関係性データを用いて、それらの集合の要素を同じ距離空間に埋め込みます。
+# CMLとは
 
-特に推薦システムにおいて、CML は MF よりもユーザー間およびアイテム間の関係性を精緻に捉えられることがわかっています。
+CML は metric learning と MF を組み合わせたアルゴリズムで、ユーザー×アイテム、ドキュメント × 単語 など 2つの集合の要素をそれらの関係データを用いて同じ距離空間に埋め込むことを可能にします。
 
-そのため、MF よりも高い精度が望まれる上、解釈性が高く定性的な評価が容易となると考えられています。
-
-また、SNS上の友達推薦やECサイト上の類似商品推薦など埋め込みベクトルの副次的な利用も想定できます。
+特に、CML は MF よりもユーザー間およびアイテム間の関係性を精緻に捉えられることがわかっています[1] 。そのため、推薦システムにおいて MF よりも高い精度が望まれる上、解釈性が高く定性的な評価が容易となると考えられています。また、SNS上の友達推薦やECサイト上の類似商品推薦など埋め込みベクトルの副次的な利用も想定できます。
 
 詳しくはこちらの参考文献 [1] をご参照ください。
 
-# Installation
+# インストール
 
 PytorchCMLは python のパッケージマネージャー pip でインストール可能です。
 
@@ -27,7 +25,7 @@ git clone https://github.com/hand10ryo/PytorchCML
 poetory install 
 ```
 
-## dependencies
+## 依存関係
 
 依存ライブラリは以下の通りです。
 
@@ -39,13 +37,13 @@ poetory install
 - pandas = "^1.1.5"
 - tqdm = "^4.41.1"
 
-# Usage
+# 使い方
 
-## Example
+## 例
 
 Movielens 100k データセットを用いた jupyter notebook の例が[こちら](https://github.com/hand10ryo/PytorchCML/tree/main/examples/notebooks)にあります。
 
-## Overview
+## 概観
 
 このライブラリは以下の6つのモジュールで構成されています。
 
@@ -60,7 +58,7 @@ Movielens 100k データセットを用いた jupyter notebook の例が[こち�
 
 これらのモジュールは以下の図のような関係があります。
 
-![Untitled](https://github.com/hand10ryo/PytorchCML/blob/main/images/diagram.png)
+![https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png](https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png)
 
 最も単純化した実装は以下の通りです。
 
@@ -88,15 +86,11 @@ trainer = trainers.CMLTrainer(model, optimizer, criterion, sampler)
 trainer.fit(n_batch=256, n_epoch=3)
 ```
 
-ただし、1行目の入力 `train_set`は、なfeedback を受け取ったユーザーIDおよびアイテムIDをレコードにもつ２列の numpy 配列を表します。
+ただし `train_set`は、ポジティブなfeedback を受け取ったユーザーIDおよびアイテムIDをレコードにもつ２列の numpy 配列を表します。
 
-3, 4行目はユーザー数・アイテム数の取得をしています。
+また`n_user`および`n_item`はユーザー数・アイテム数の取得をしています。ユーザーIDおよびアイテムIDは0から始まり、全てのユーザーおよびアイテムが`train_set`に含まれることを想定しています。
 
-ここで、ユーザーIDおよびアイテムIDは0から始まり、全てのユーザーおよびアイテムが`train_set`に含まれることを想定しています。
-
-その後、model, optimizer, criterion, sampler を定義し、trainer に入力します
-
-trainer の fit メソッドを実行すると CML の学習が始まります。
+その後、model, optimizer, criterion, sampler を定義し、trainer に入力し、trainer の fit メソッドを実行すると CML の学習が始まります。
 
 ## models
 
@@ -129,9 +123,9 @@ losses は埋め込みベクトル学習のための損失関数を司るモジ�
 
 損失関数は主に、PairwiseLoss と TripletLoss に分けられます。
 
-PairwiseLoss は、ユーザーアイテムペア (u,i) ごとの損失です。
+PairwiseLoss は、ユーザーアイテムペア(u, i) ごとの損失です。
 
-TripletLoss は、ポジティブなユーザーアイテムペア (u, i_p) に対してネガティブなアイテム i_n を加えた (u, i_p, i_n) ごとの損失です。
+TripletLoss は、ポジティブなユーザーアイテムペア (u, i_p) に対してネガティブなアイテムi_nを加えた(u, i_p,i_n)ごとの損失です。
 
 ## samplers
 
@@ -139,7 +133,7 @@ samplers は学習中のミニバッチのサンプリングを司るモジュ�
 
 sampler が行うサンプリングは２種類あります。
 
-- ポジティブなユーザーアイテムペア  (u, i_p)  の抽出
+- ポジティブなユーザーアイテムペア (u, i_p) の抽出
 - ネガティブなアイテム i_n の抽出
 
 デフォルトでは両者のサンプリングを一様ランダムに行います。
@@ -151,8 +145,8 @@ sampler が行うサンプリングは２種類あります。
 ```python
 item_ids, item_popularity = np.unique(train_set[:,1], return_counts=True)
 sampler = samplers.BaseSampler(
-    train_set_torch, neg_weight = item_popularity,
-    n_user, n_item, device=device
+		train_set_torch, neg_weight = item_popularity,
+		n_user, n_item, device=device
 )
 ```
 
@@ -184,9 +178,9 @@ score_function_dict = {
     "Recall": evaluators.recall
 }
 evaluator = evaluators.UserwiseEvaluator(
-    test_set_torch, 
-    score_function_dict, 
-    ks=[3,5]
+		test_set_torch, 
+		score_function_dict, 
+		ks=[3,5]
 )
 
 # calc scores
@@ -203,21 +197,15 @@ evaluators モジュールにはその関数として、nDCG@k, MAP@k, Recall@k 
 
 ここではその３つを設定していますが、任意の数の評価指標を設定できます。
 
-`evaluator`は、テストデータ、評価指標、 @k の種類を持つリストを入力とします。
-
-model を入力とするメソッド `.score()`を実行すればそのスコアを計算できます。
-
-その出力 `scores`は、各スコアを持つ1行の pandas.DataFrame となります。
-
-この例ではそのカラムは `["nDCG@3", "MAP@3", "Recall@3", "nDCG@5", "MAP@5", "Recall@5"]`となります。
+`evaluator`は、テストデータ、評価指標、 @k の種類を持つリストを入力とします。model を入力とするメソッド `.score()`を実行すればそのスコアを計算できます。その出力 `scores`は、各スコアを持つ1行の pandas.DataFrame となります。この例ではそのカラムは `["nDCG@3", "MAP@3", "Recall@3", "nDCG@5", "MAP@5", "Recall@5"]`となります。
 
 また、trainer の fit メソッドの引数 `valid_evaluator` に evaluator を設定すれば学習経過にも評価することができ、ハイパーパラメータ調整にも役立ちます。
 
 ```python
 valid_evaluator = evaluators.UserwiseEvaluator(
-    test_set_torch, # eval set
-    score_function_dict, 
-    ks=[3,5]
+		test_set_torch, # eval set
+		score_function_dict, 
+		ks=[3,5]
 )
 trainer.fit(n_batch=50, n_epoch=15, valid_evaluator = valid_evaluator)
 ```
@@ -244,6 +232,21 @@ pip install poetry-dynamic-versioning
 # poetry install
 poetry build
 # poetry lock
+```
+
+# 引用
+
+ PyTorchCML はMIT Licenseとして使用できます。研究に用いた際は以下を引用していただけると幸いです。
+
+```jsx
+@misc{matsui2021pytorchcml,
+  author = {Ryo, Matsui},
+  title = {PyTorchCML},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {https://github.com/hand10ryo/PyTorchCML}
+}
 ```
 
 # 参考文献
