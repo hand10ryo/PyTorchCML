@@ -3,8 +3,8 @@ import unittest
 import torch
 import numpy as np
 
-from PytorchCML.samplers import BaseSampler
-from PytorchCML.models import LogitMatrixFactorization
+from PyTorchCML.samplers import BaseSampler
+from PyTorchCML.models import LogitMatrixFactorization
 
 
 class TestBaseSampler(unittest.TestCase):

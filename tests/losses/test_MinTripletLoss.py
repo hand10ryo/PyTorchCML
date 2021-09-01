@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch import nn
 
-from PytorchCML.losses import MinTripletLoss
+from PyTorchCML.losses import MinTripletLoss
 
 
 class SampleRegularizer(nn.Module):

@@ -3,7 +3,7 @@ import unittest
 import torch
 from torch import nn
 
-from PytorchCML.losses import MSEPairwiseLoss
+from PyTorchCML.losses import MSEPairwiseLoss
 
 
 class SampleRegularizer(nn.Module):

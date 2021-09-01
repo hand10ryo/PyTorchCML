@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "PytorchCML"
+name = "PyTorchCML"
 version = "0.0.0"
 description = "Collaborative Metric Learning implemented by Pytorch"
 authors = ["hand10ryo <hand10ryo@yahoo.co.jp>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/hand10ryo/PytorchCML"
-repository = "https://github.com/hand10ryo/PytorchCML"
+homepage = "https://github.com/hand10ryo/PyTorchCML"
+repository = "https://github.com/hand10ryo/PyTorchCML"
 packages = [
-    { include = "PytorchCML" }
+    { include = "PyTorchCML" }
 ]
 
 [tool.poetry-dynamic-versioning]
