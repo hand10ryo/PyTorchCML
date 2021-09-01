@@ -1,6 +1,6 @@
 # PyTorchCML
 
-PyTorchCML is a library of PyTorch implementations of matrix factorization (MF) and collaborative metric learning (CML), algorithms used in recommendation systems and data mining.
+PyTorchCML is a library of PyTorch implementations of matrix factorization (MF) and collaborative metric learning (CML), algorithms used in recommendation systems, and data mining.
 
 日本語版READMEは[こちら](https://github.com/hand10ryo/PyTorchCML/blob/main/README_ja.md)
 
