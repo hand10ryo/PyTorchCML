@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "PyTorchCML"
 version = "0.0.0"
-description = "Collaborative Metric Learning implemented by Pytorch"
+description = "Collaborative Metric Learning implemented by PyTorch"
 authors = ["hand10ryo <hand10ryo@yahoo.co.jp>"]
 license = "MIT"
 readme = "README.md"

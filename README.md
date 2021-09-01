@@ -1,5 +1,5 @@
 # Pytorch CML
-Collaborative Metric Learning implemented by pytorch
+Collaborative Metric Learning implemented by PyTorch
 
 # Usage
 1. Set model, optimizer, loss, sampler and evaluator.
