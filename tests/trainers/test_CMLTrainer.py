@@ -2,7 +2,7 @@ import unittest
 import torch
 from torch import optim
 
-from PytorchCML import evaluators, losses, models, samplers, trainers
+from PyTorchCML import evaluators, losses, models, samplers, trainers
 
 
 class TestCMLTrainer(unittest.TestCase):

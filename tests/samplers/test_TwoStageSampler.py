@@ -3,7 +3,7 @@ import unittest
 import torch
 import numpy as np
 
-from PytorchCML.samplers import TwoStageSampler
+from PyTorchCML.samplers import TwoStageSampler
 
 
 class TestTwoStageSampler(unittest.TestCase):

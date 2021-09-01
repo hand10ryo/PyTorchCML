@@ -4,7 +4,7 @@ import torch
 from torch import nn
 import numpy as np
 
-from PytorchCML.losses import LogitPairwiseLoss
+from PyTorchCML.losses import LogitPairwiseLoss
 
 
 def sigmoid(x: np.ndarray) -> np.ndarray:

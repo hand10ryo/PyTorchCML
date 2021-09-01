@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from PytorchCML.regularizers import L2Regularizer
+from PyTorchCML.regularizers import L2Regularizer
 
 
 class TestL2Regularizer(unittest.TestCase):

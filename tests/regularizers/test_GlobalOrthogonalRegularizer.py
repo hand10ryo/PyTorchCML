@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from PytorchCML.regularizers import GlobalOrthogonalRegularizer
+from PyTorchCML.regularizers import GlobalOrthogonalRegularizer
 
 
 class TestGlobalOrthogonalRegularizer(unittest.TestCase):
