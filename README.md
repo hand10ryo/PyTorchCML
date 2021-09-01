@@ -149,8 +149,8 @@ For example, if you want to weigh the items by their popularity, you can follow.
 ```python
 item_ids, item_popularity = np.unique(train_set[:,1], return_counts=True)
 sampler = samplers.BaseSampler(
-		train_set_torch, neg_weight = item_popularity,
-		n_user, n_item, device=device
+    train_set_torch, neg_weight = item_popularity,
+    n_user, n_item, device=device
 )
 ```
 
@@ -182,9 +182,9 @@ score_function_dict = {
     "Recall": evaluators.recall
 }
 evaluator = evaluators.UserwiseEvaluator(
-		test_set_torch, 
-		score_function_dict, 
-		ks=[3,5]
+    test_set_torch, 
+    score_function_dict, 
+    ks=[3,5]
 )
 
 # calc scores
@@ -204,9 +204,9 @@ This system is helpful for hyperparameter tuning.
 
 ```python
 valid_evaluator = evaluators.UserwiseEvaluator(
-		test_set_torch, # eval set
-		score_function_dict, 
-		ks=[3,5]
+    test_set_torch, # eval set
+    score_function_dict, 
+    ks=[3,5]
 )
 trainer.fit(n_batch=50, n_epoch=15, valid_evaluator = valid_evaluator)
 ```
@@ -231,9 +231,9 @@ It is also possible to introduce multiple regularizations by increasing the leng
 pip install poetry
 pip install poetry-dynamic-versioning
 
-# poetry install
+poetry install
 poetry build
-# poetry lock
+poetry lock
 ```
 
 # Citation
