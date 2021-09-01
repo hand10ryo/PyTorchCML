@@ -1,14 +1,14 @@
-# PyTorch CML
+# PyTorchCML
 
-PyTorch CML is a PyTorch implementation of matrix factorization (MF) and collaborative metric learning (CML), algorithms for recommendation systems, and data mining.
+PyTorchCML is a library of PyTorch implementations of matrix factorization (MF) and collaborative metric learning (CML), algorithms used in recommendation systems and data mining.
 
 日本語版READMEは[こちら](https://github.com/hand10ryo/PyTorchCML/blob/main/README_ja.md)
 
 # What is CML ?
 
-CML is an algorithm that combines metric learning and MF. It allows us to embed elements of two sets, such as user × item or document × word, into a joint distance metric space using their relational data.
+CML is an algorithm that combines metric learning and MF. It allows us to embed elements of two sets, such as user-item or document-word, into a joint distance metric space using their relational data.
 
-In particular, CML is known to capture the user-user and item-item relationships more precisely than MF [1], making it desirable for recommendation systems to have higher accuracy and interpretability than MF. In addition, the embeddings can be used for secondary purposes such as friend recommendations on SNS and similar item recommendations on e-commerce sites.
+In particular, CML is known to capture user-user and item-item relationships more precisely than MF and can achieve higher accuracy and interpretability than MF for recommendation systems [1]. In addition, the embeddings can be used for secondary purposes such as friend recommendations on SNS and similar item recommendations on e-commerce sites.
 
 For more details, please refer to this reference [1].
 

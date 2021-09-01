@@ -1,6 +1,6 @@
-# PytorchCML
+# PyTorchCML
 
-PyTorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
+PyTorchCMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
 
 English version of README is [here](https://github.com/hand10ryo/PyTorchCML/blob/main/README.md)
 
@@ -14,7 +14,7 @@ CML は metric learning と MF を組み合わせたアルゴリズムで、ユ�
 
 # インストール
 
-PytorchCMLは python のパッケージマネージャー pip でインストール可能です。
+PyTorchCMLは python のパッケージマネージャー pip でインストール可能です。
 
 ```bash
 pip install PyTorchCML
