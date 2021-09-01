@@ -1,6 +1,6 @@
-# PyTorchCML
+# PytorchCML
 
-PyTorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
+Pytorch CMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を pytorch で実装したライブラリです。
 
 # CMLとは
 
@@ -15,13 +15,13 @@ CML は metric learning と MF を組み合わせたアルゴリズムで、ユ�
 PytorchCMLは python のパッケージマネージャー pip でインストール可能です。
 
 ```bash
-pip install PytorchCML
+pip install PyTorchCML
 ```
 
 また、ソースコード を直接 ダウンロードして poetry で環境を構築することもできます。
 
 ```bash
-git clone https://github.com/hand10ryo/PytorchCML
+git clone https://github.com/hand10ryo/PyTorchCML
 poetory install 
 ```
 
@@ -66,7 +66,7 @@ Movielens 100k データセットを用いた jupyter notebook の例が[こち�
 import torch
 from torch import optim
 import numpy as np
-from PytorchCML import losses, models, samplers, trainers
+from PyTorchCML import losses, models, samplers, trainers
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # train dataset (whose columns are [user_id, item_id].)
@@ -165,7 +165,7 @@ evaluators は学習後のパフォーマンス評価を行うためのモジュ
 学習後の評価は以下のように行うことができます。
 
 ```python
-from PytorchCML import evaluators
+from PyTorchCML import evaluators
 
 # test set (whose columns are [user_id, item_id, rating].)
 test_set = np.array([[0, 2, 3], [0, 3, 4], [1, 0, 2], [1, 1, 5]])
@@ -217,6 +217,7 @@ regularizers は埋め込みベクトルの正則化項を司るモジュール�
 以下のように、損失関数の引数に regularizer のインスタンスを要素にもつリストを入力することでL2ノルムなどを実装することができます。
 
 ```python
+from PyTorchCML import regularizers
 regs = [regularizers.L2Regularizer(weight=1e-2)]
 criterion = losses.MinTripletLoss(margin=1, regularizers=regs).to(device)
 ```
