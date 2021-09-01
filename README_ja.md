@@ -14,7 +14,7 @@ CML は metric learning と MF を組み合わせたアルゴリズムで、ユ�
 
 # インストール
 
-PytorchCMLは python のパッケージマネージャー pip でインストール可能です。
+PyTorchCMLは python のパッケージマネージャー pip でインストール可能です。
 
 ```bash
 pip install PyTorchCML
