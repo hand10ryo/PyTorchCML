@@ -1,9 +1,9 @@
 import torch
 
-from .BasePairwiseLoss import BasePairwiseLoss
+from .BaseLoss import BaseLoss
 
 
-class MSEPairwiseLoss(BasePairwiseLoss):
+class MSEPairwiseLoss(BaseLoss):
     """Class of loss for MSE in implicit feedback"""
 
     def forward(

@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from .BasePairwiseLoss import BasePairwiseLoss
+from .BaseLoss import BaseLoss
 
 
-class RelevancePairwiseLoss(BasePairwiseLoss):
+class RelevancePairwiseLoss(BaseLoss):
     """Class of loss for Relevance Matrix Factorization
 
     See below reference for detail.
