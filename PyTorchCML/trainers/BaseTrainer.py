@@ -1,9 +1,9 @@
-from typing import Optional, Union
+from typing import Optional
 
 from torch import optim
 
 from ..evaluators import BaseEvaluator
-from ..losses import BasePairwiseLoss, BaseTripletLoss
+from ..losses import BaseLoss
 from ..models import BaseEmbeddingModel
 from ..samplers import BaseSampler
 
@@ -15,7 +15,7 @@ class BaseTrainer:
         self,
         model: BaseEmbeddingModel,
         optimizer: optim,
-        criterion: Union[BasePairwiseLoss, BaseTripletLoss],
+        criterion: BaseLoss,
         sampler: BaseSampler,
         column_names: Optional[dict] = None,
     ):
