@@ -2,26 +2,17 @@ import torch
 from torch import nn
 
 
-class BaseTripletLoss(nn.Module):
-    """Class of Abstract Loss for Triplet"""
+class BaseLoss(nn.Module):
+    """Class of abstract loss module for pairwise loss like matrix factorization."""
 
-    def __init__(self, margin: float = 1, regularizers: list = []):
-        """Set margin size and ReLU function
-
-        Args:
-            margin (float, optional): safe margin size. Defaults to 1.
-            regularizers (list, optional): list of regularizer
-        """
+    def __init__(self, regularizers: list = []):
         super().__init__()
-        self.margin = margin
-        self.ReLU = nn.ReLU()
         self.regularizers = regularizers
 
     def forward(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forward
-
+        """
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
             batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
@@ -33,19 +24,20 @@ class BaseTripletLoss(nn.Module):
         Returns:
             torch.Tensor: [description]
 
-
-        ---- example code ---
+         ---   example code   ---
 
         # embeddings_dict = {
         #   "user_embedding": user_emb,
         #    "pos_item_embedding": pos_item_emb,
         #    "neg_item_embedding": neg_item_emb,
+        #    "user_bias": user_bias,
+        #    "pos_item_bias": pos_item_bias,
+        #    "neg_item_bias": neg_item_bias,
         #}
 
-        loss = some_function(embeddings_dict, batch, column_names)
+        loss = loss_function(embeddings_dict, batch, column_names)
         reg = self.regularize(embeddings_dict)
         return loss + reg
-
         """
 
         raise NotImplementedError

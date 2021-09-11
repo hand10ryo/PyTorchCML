@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from .BasePairwiseLoss import BasePairwiseLoss
+from .BaseLoss import BaseLoss
 
 
-class LogitPairwiseLoss(BasePairwiseLoss):
+class LogitPairwiseLoss(BaseLoss):
     """Class of pairwise logit loss for Logistic Matrix Factorization"""
 
     def __init__(self, regularizers: list = []):

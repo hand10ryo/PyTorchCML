@@ -1,12 +1,15 @@
 import torch
+from torch import nn
 
-from .BaseTripletLoss import BaseTripletLoss
+from .BaseLoss import BaseLoss
 
 
-class MinTripletLoss(BaseTripletLoss):
+class MinTripletLoss(BaseLoss):
     def __init__(self, margin: float = 1, regularizers: list = []):
         """Class of Triplet Loss taking minimum negative sample."""
-        super().__init__(margin, regularizers)
+        super().__init__(regularizers)
+        self.margin = margin
+        self.ReLU = nn.ReLU()
 
     def forward(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
