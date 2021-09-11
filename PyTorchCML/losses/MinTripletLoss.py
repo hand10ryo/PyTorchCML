@@ -18,8 +18,8 @@ class MinTripletLoss(BaseLoss):
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
-                user_embedding : embeddings of user, size (n_batch, d)
-                pos_item_embedding : embeddings of positive item, size (n_batch, d)
+                user_embedding : embeddings of user, size (n_batch, 1, d)
+                pos_item_embedding : embeddings of positive item, size (n_batch, 1, d)
                 neg_item_embedding : embeddings of negative item, size (n_batch, n_neg_samples, d)
 
             batch (torch.Tensor) : A tensor of batch, size (n_batch, *).

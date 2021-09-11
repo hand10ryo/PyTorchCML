@@ -30,8 +30,8 @@ class TestMSEPairwiseLoss(unittest.TestCase):
         avg_loss = 26 / 3
         """
         embeddings_dict = {
-            "user_embedding": torch.zeros(3, 5),
-            "pos_item_embedding": torch.zeros(3, 5) * 2,
+            "user_embedding": torch.zeros(3, 1, 5),
+            "pos_item_embedding": torch.zeros(3, 1, 5) * 2,
             "neg_item_embedding": -torch.zeros(3, 2, 5),
             "user_bias": torch.zeros(3, 1),
             "pos_item_bias": torch.zeros(3, 1) * 2,
