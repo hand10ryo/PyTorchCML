@@ -14,7 +14,15 @@ class BaseLoss(nn.Module):
     ) -> torch.Tensor:
         """
         Args:
-            embeddings_dict (dict): A dictionary of embddings which has following key and values.
+            embeddings_dict (dict): A dictionary of embddings.
+            (e.g. It has following key and values.)
+                user_embedding : embeddings of user, size (n_batch, 1, d)
+                pos_item_embedding : embeddings of positive item, size (n_batch, 1, d)
+                neg_item_embedding : embeddings of negative item, size (n_batch, n_neg_samples, d)
+                user_bias : bias of user, size (n_batch, 1)
+                pos_item_bias : bias of positive item, size (n_batch, 1)
+                neg_item_bias : bias of negative item, size (n_batch, n_neg_samples)
+
             batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
             column_names (dict) : A dictionary that maps names to indices of rows of batch.
 
