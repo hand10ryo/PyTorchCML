@@ -82,7 +82,7 @@ model = models.CollaborativeMetricLearning(n_user, n_item, n_dim=10).to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 criterion = losses.MinTripletLoss(margin=1).to(device)
 sampler = samplers.BaseSampler(train_set_torch, n_user, n_item, device=device)
-trainer = trainers.CMLTrainer(model, optimizer, criterion, sampler)
+trainer = trainers.BaseTrainer(model, optimizer, criterion, sampler)
 
 # run 
 trainer.fit(n_batch=256, n_epoch=3)
@@ -159,8 +159,6 @@ sampler = samplers.BaseSampler(
 The trainers is the module that handles training.
 
 You can train by setting up a model, optimizer, loss function, and sampler.
-
-Currently, there are two modules, one for CML and one for MF.
 
 ## evaluators
 
