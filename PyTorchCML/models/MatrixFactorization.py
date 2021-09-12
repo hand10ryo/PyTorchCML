@@ -4,6 +4,7 @@ import torch
 from torch import nn
 
 from .BaseEmbeddingModel import BaseEmbeddingModel
+from ..adaptors import BaseAdaptor
 
 
 class LogitMatrixFactorization(BaseEmbeddingModel):
@@ -18,6 +19,8 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         item_embedding_init: Optional[torch.Tensor] = None,
         user_bias_init: Optional[torch.Tensor] = None,
         item_bias_init: Optional[torch.Tensor] = None,
+        user_adaptor: Optional[BaseAdaptor] = None,
+        item_adaptor: Optional[BaseAdaptor] = None,
     ):
         """Set model parameters
 
@@ -34,7 +37,14 @@ class LogitMatrixFactorization(BaseEmbeddingModel):
         """
 
         super().__init__(
-            n_user, n_item, n_dim, max_norm, user_embedding_init, item_embedding_init
+            n_user,
+            n_item,
+            n_dim,
+            max_norm,
+            user_embedding_init,
+            item_embedding_init,
+            user_adaptor,
+            item_adaptor,
         )
         self.max_bias = max_bias
         self.weight_link = lambda x: torch.sigmoid(-x)
