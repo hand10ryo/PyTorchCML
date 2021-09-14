@@ -229,9 +229,9 @@ It is also possible to introduce multiple regularizations by increasing the leng
 
 The adaptors is a module for realizing domain adaptation.
 
-Domain adaptation in CML is achieved by adding <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;L(v_i,&space;\\theta)&space;=&space;\\|f(x_i;\\theta)-v_i\\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" />  to the loss for feature <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" /> of item  <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> . The same is true for the user. This allows us to reflect attribute information in the embedding vector.
+Domain adaptation in CML is achieved by adding <img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;L(v_i,&space;\theta)&space;=&space;\|f(x_i;\theta)-v_i\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" /> to the loss for feature <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" /> of item  <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> . The same is true for the user. This allows us to reflect attribute information in the embedding vector.
 
-MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;f(x_i;\\theta)" title="f(x_i;\theta)" />.
+MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function <img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;f(x_i;\theta)" title="f(x_i;\theta)" />.
 
 You can set up the adaptor as shown in the code below
 

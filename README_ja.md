@@ -230,9 +230,9 @@ criterion = losses.MinTripletLoss(margin=1, regularizers=regs).to(device)
 
 adaptors はドメイン適合を実現するためのモジュールです。
 
-CMLにおけるドメイン適合はアイテム <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> の特徴量 <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" />に対して、<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;f(x_i;\\theta)" title="f(x_i;\theta)" /> を損失に加えることで達成します。ユーザーについても同様です。これによって埋め込みベクトルに属性情報を反映することができます。
+CMLにおけるドメイン適合はアイテム <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> の特徴量 <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" />に対して、<img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;L(v_i,&space;\theta)&space;=&space;\|f(x_i;\theta)-v_i\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" /> を損失に加えることで達成します。ユーザーについても同様です。これによって埋め込みベクトルに属性情報を反映することができます。
 
-MLPAdaptor は<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;f(x_i;\\theta)" title="f(x_i;\theta)" />に多層パーセプトロンを仮定した Adaptor クラスです。
+MLPAdaptor は<img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;f(x_i;\theta)" title="f(x_i;\theta)" />に多層パーセプトロンを仮定した Adaptor クラスです。
 
 以下のようにモデルに組み込むことができます。
 
