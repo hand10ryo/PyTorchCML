@@ -126,10 +126,10 @@ model = models.LogitMatrixFactorization(
 The losses module is for handling the loss function for learning embeddings.
 We can mainly divide the loss function into PairwiseLoss and TripletLoss.
 
-PairwiseLoss is the loss for each user-item pair <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;(u,i))" title="(u, i)" />.
+PairwiseLoss is the loss for each user-item pair <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i)" title="(u, i)" />.
 
-TripletLoss is the loss per <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+,i_-)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;(u,i_+,i_-))" title="(u,i_+,i_-)" />.
-Here, <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;(u,i_+))" title="(u,i_+)" /> is a positive pair, and <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_-)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;(u,i_-))" title="(u,i_-)" /> is a negative pair.
+TripletLoss is the loss per <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+,i_-)" title="(u,i_+,i_-)" />.
+Here, <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+)" title="(u,i_+)" /> is a positive pair, and <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_-)" title="(u,i_-)" /> is a negative pair.
 
 In general, CML uses triplet loss, and MF uses pairwise loss.
 
@@ -139,8 +139,8 @@ The samplers is a module that handles the sampling of mini-batches during traini
 
 There are two types of sampling done by the sampler.
 
-- Sampling of positive user-item pairs <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;(u,i_+))" title="(u,i_+)" />
-- Sampling of negative items <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;i_-](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;i_-)" title="i_-" />
+- Sampling of positive user-item pairs <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;(u,i_+)" title="(u,i_+)" />
+- Sampling of negative items <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;i_-" title="i_-" />
 
 The default setting is to sample both with a uniform random probability.
 
@@ -229,9 +229,9 @@ It is also possible to introduce multiple regularizations by increasing the leng
 
 The adaptors is a module for realizing domain adaptation.
 
-Domain adaptation in CML is achieved by adding <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;L(v_i,&space;\\theta)&space;=&space;\\|f(x_i;\\theta)-v_i\\|^2](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;L(v_i,&space;%5C%5Ctheta)&space;=&space;%5C%5C%7Cf(x_i;%5C%5Ctheta)-v_i%5C%5C%7C%5E2)" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" />  to the loss for feature <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;x_i](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;x_i)" title="x_i" /> of item  <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;i](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;i)" title="i" /> . The same is true for the user. This allows us to reflect attribute information in the embedding vector.
+Domain adaptation in CML is achieved by adding <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;L(v_i,&space;\\theta)&space;=&space;\\|f(x_i;\\theta)-v_i\\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" />  to the loss for feature <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;x_i" title="x_i" /> of item  <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;i" title="i" /> . The same is true for the user. This allows us to reflect attribute information in the embedding vector.
 
-MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function <img src="[https://latex.codecogs.com/gif.latex?\\bg_black&space;f(x_i;\\theta)](https://latex.codecogs.com/gif.latex?%5C%5Cbg_black&space;f(x_i;%5C%5Ctheta))" title="f(x_i;\theta)" />.
+MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function <img src="https://latex.codecogs.com/gif.latex?\\bg_black&space;f(x_i;\\theta)" title="f(x_i;\theta)" />.
 
 You can set up the adaptor as shown in the code below
 
