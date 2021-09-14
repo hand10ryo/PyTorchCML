@@ -6,10 +6,10 @@ from .BaseLoss import BaseLoss
 class MSEPairwiseLoss(BaseLoss):
     """Class of loss for MSE in implicit feedback"""
 
-    def forward(
+    def main(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forwarding loss
+        """Method of forwarding main loss
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
@@ -53,6 +53,5 @@ class MSEPairwiseLoss(BaseLoss):
         neg_loss = (torch.sigmoid(neg_r_hat) ** 2).sum()
 
         loss = (pos_loss + neg_loss) / (n_batch * (n_pos + n_neg))
-        reg = self.regularize(embeddings_dict)
 
-        return loss + reg
+        return loss

@@ -3,6 +3,8 @@ from typing import Optional
 import torch
 from torch import nn
 
+from ..adaptors import BaseAdaptor
+
 
 class BaseEmbeddingModel(nn.Module):
     """Class of abstract embeddings model getting embedding or predict relevance from indices."""
@@ -15,6 +17,8 @@ class BaseEmbeddingModel(nn.Module):
         max_norm: Optional[float] = 1,
         user_embedding_init: Optional[torch.Tensor] = None,
         item_embedding_init: Optional[torch.Tensor] = None,
+        user_adaptor: Optional[BaseAdaptor] = None,
+        item_adaptor: Optional[BaseAdaptor] = None,
     ):
         """Set embeddings.
 
@@ -31,6 +35,8 @@ class BaseEmbeddingModel(nn.Module):
         self.n_item = n_item
         self.n_dim = n_dim
         self.max_norm = max_norm
+        self.user_adaptor = user_adaptor
+        self.item_adaptor = item_adaptor
 
         if user_embedding_init is None:
             self.user_embedding = nn.Embedding(
@@ -71,7 +77,7 @@ class BaseEmbeddingModel(nn.Module):
         """Method of predicting relevance for each pair of user and item.
 
         Args:
-            pairs (torch.Tensor): Tensor which columns are [user_id, item_id]
+            pairs (torch.Tensor): Tensor whose columns are [user_id, item_id]
 
         Raises:
             NotImplementedError: [description]

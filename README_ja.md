@@ -1,5 +1,7 @@
 # PyTorchCML
 
+![https://github.com/hand10ryo/PyTorchCML/blob/image/images/icon.png](https://github.com/hand10ryo/PyTorchCML/blob/image/images/icon.png)
+
 PyTorchCMLは、推薦システム・データマイニングのアルゴリズムである 行列分解(matrix factorization, MF) および collaborative metric learning (CML)を PyTorch で実装したライブラリです。
 
 English version of README is [here](https://github.com/hand10ryo/PyTorchCML/blob/main/README.md)
@@ -60,7 +62,7 @@ Movielens 100k データセットを用いた jupyter notebook の例が[こち�
 
 これらのモジュールは以下の図のような関係があります。
 
-![https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png](https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png)
+![https://github.com/hand10ryo/PyTorchCML/blob/image/images/diagram.png](https://github.com/hand10ryo/PyTorchCML/blob/image/images/diagram.png)
 
 最も単純化した実装は以下の通りです。
 
@@ -125,9 +127,9 @@ losses は埋め込みベクトル学習のための損失関数を司るモジ�
 
 損失関数は主に、PairwiseLoss と TripletLoss に分けられます。
 
-PairwiseLoss は、ユーザーアイテムペア(u, i) ごとの損失です。
+PairwiseLoss は、ユーザーアイテムペア <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i)" title="(u, i)" /> ごとの損失です。
 
-TripletLoss は、ポジティブなユーザーアイテムペア (u, i_p) に対してネガティブなアイテムi_nを加えた(u, i_p,i_n)ごとの損失です。
+TripletLoss は、ポジティブなユーザーアイテムペア <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+)" title="(u,i_+)" />に対してネガティブなアイテム<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i_-" title="i_-" />を加えた<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+,i_-)" title="(u,i_+,i_-)" />ごとの損失です。
 
 ## samplers
 
@@ -135,8 +137,8 @@ samplers は学習中のミニバッチのサンプリングを司るモジュ�
 
 sampler が行うサンプリングは２種類あります。
 
-- ポジティブなユーザーアイテムペア (u, i_p) の抽出
-- ネガティブなアイテム i_n の抽出
+- ポジティブなユーザーアイテムペア<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+)" title="(u,i_+)" />の抽出
+- ネガティブなアイテム<img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i_-" title="i_-" />の抽出
 
 デフォルトでは両者のサンプリングを一様ランダムに行います。
 
@@ -223,6 +225,34 @@ criterion = losses.MinTripletLoss(margin=1, regularizers=regs).to(device)
 ```
 
 リストの長さを増やせば複数の正則化を導入することも可能です。
+
+## adaptors
+
+adaptors はドメイン適合を実現するためのモジュールです。
+
+CMLにおけるドメイン適合はアイテム <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> の特徴量 <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" />に対して、<img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;L(v_i,&space;\theta)&space;=&space;\|f(x_i;\theta)-v_i\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" /> を損失に加えることで達成します。ユーザーについても同様です。これによって埋め込みベクトルに属性情報を反映することができます。
+
+MLPAdaptor は<img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;f(x_i;\theta)" title="f(x_i;\theta)" />に多層パーセプトロンを仮定した Adaptor クラスです。
+
+以下のようにモデルに組み込むことができます。
+
+```python
+from PyTorchCML import adaptors
+
+# item_feature.shape = (n_item, n_feature)
+item_feature_torch = torch.Tensor(item_feature)
+adaptor = adaptors.MLPAdaptor(
+    item_feature_torch, 
+    n_dim=10, 
+    n_hidden=[20], 
+    weight=1e-4
+)
+
+model = models.CollaborativeMetricLearning(
+    n_user, n_item, n_dim, 
+    item_adaptor=adaptor
+).to(device)
+```
 
 # 開発
 

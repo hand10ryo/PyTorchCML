@@ -28,10 +28,10 @@ class RelevancePairwiseLoss(BaseLoss):
         else:
             raise NotImplementedError
 
-    def forward(
+    def main(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forwarding loss
+        """Method of forwarding main loss
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
@@ -79,6 +79,5 @@ class RelevancePairwiseLoss(BaseLoss):
         neg_loss = self.delta_neg(neg_r_hat).sum()
 
         loss = (pos_loss + neg_loss) / (n_batch * (n_pos + n_neg))
-        reg = self.regularize(embeddings_dict)
 
-        return loss + reg
+        return loss

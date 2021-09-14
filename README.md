@@ -1,5 +1,7 @@
 # PyTorchCML
 
+![https://github.com/hand10ryo/PyTorchCML/blob/image/images/icon.png](https://github.com/hand10ryo/PyTorchCML/blob/image/images/icon.png)
+
 PyTorchCML is a library of PyTorch implementations of matrix factorization (MF) and collaborative metric learning (CML), algorithms used in recommendation systems and data mining.
 
 日本語版READMEは[こちら](https://github.com/hand10ryo/PyTorchCML/blob/main/README_ja.md)
@@ -60,7 +62,7 @@ By combining these modules, you can implement a variety of algorithms.
 
 The following figure shows the relationship between these modules.
 
-![https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png](https://github.com/hand10ryo/PyTorchCML/blob/main/images/diagram.png)
+![https://github.com/hand10ryo/PyTorchCML/blob/image/images/diagram.png](https://github.com/hand10ryo/PyTorchCML/blob/image/images/diagram.png)
 
 The most straightforward implementation is as follows.
 
@@ -92,7 +94,7 @@ The input `train_set` represents a two-column NumPy array whose records are the 
 
 The `n_user` and `n_item` are the number of users and items. Here, we assume that user ID and item ID start from 0 and that all users and items are included in the train_set.
 
-Then, define model, optimizer, criterion, and sampler, input them to a trainer and run the trainer's fit method to start learning CML.
+Then, define model, optimizer, criterion, and sampler, input them to a trainer and run the trainer's fit method to start learning CM
 
 ## models
 
@@ -124,10 +126,10 @@ model = models.LogitMatrixFactorization(
 The losses module is for handling the loss function for learning embeddings.
 We can mainly divide the loss function into PairwiseLoss and TripletLoss.
 
-PairwiseLoss is the loss for each user-item pair (u, i).
+PairwiseLoss is the loss for each user-item pair <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i)" title="(u, i)" />.
 
-TripletLoss is the loss per (u, i_p, i_n).
-Here, (u, i_p) is a positive pair, and (u, i_n) is a negative pair.
+TripletLoss is the loss per <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+,i_-)" title="(u,i_+,i_-)" />.
+Here, <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+)" title="(u,i_+)" /> is a positive pair, and <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_-)" title="(u,i_-)" /> is a negative pair.
 
 In general, CML uses triplet loss, and MF uses pairwise loss.
 
@@ -137,8 +139,8 @@ The samplers is a module that handles the sampling of mini-batches during traini
 
 There are two types of sampling done by the sampler.
 
-- Sampling of positive user-item pairs (u, i_p)
-- Sampling of negative items i_n
+- Sampling of positive user-item pairs <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;(u,i_+)" title="(u,i_+)" />
+- Sampling of negative items <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i_-" title="i_-" />
 
 The default setting is to sample both with a uniform random probability.
 
@@ -222,6 +224,34 @@ criterion = losses.MinTripletLoss(margin=1, regularizers=regs).to(device)
 ```
 
 It is also possible to introduce multiple regularizations by increasing the length of the list.
+
+## adaptors
+
+The adaptors is a module for realizing domain adaptation.
+
+Domain adaptation in CML is achieved by adding <img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;L(v_i,&space;\theta)&space;=&space;\|f(x_i;\theta)-v_i\|^2" title="L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2" /> to the loss for feature <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;x_i" title="x_i" /> of item  <img src="https://latex.codecogs.com/gif.latex?\bg_black&space;i" title="i" /> . The same is true for the user. This allows us to reflect attribute information in the embedding vector.
+
+MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function <img src="https://latex.codecogs.com/gif.latex?\inline&space;\bg_black&space;f(x_i;\theta)" title="f(x_i;\theta)" />.
+
+You can set up the adaptor as shown in the code below
+
+```python
+from PyTorchCML import adaptors
+
+# item_feature.shape = (n_item, n_feature)
+item_feature_torch = torch.Tensor(item_feature)
+adaptor = adaptors.MLPAdaptor(
+    item_feature_torch, 
+    n_dim=10, 
+    n_hidden=[20], 
+    weight=1e-4
+)
+
+model = models.CollaborativeMetricLearning(
+    n_user, n_item, n_dim, 
+    item_adaptor=adaptor
+).to(device)
+```
 
 # Development
 

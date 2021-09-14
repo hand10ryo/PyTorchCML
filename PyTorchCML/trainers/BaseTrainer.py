@@ -61,7 +61,7 @@ class BaseTrainer:
         for ep in range(n_epoch):
             accum_loss = 0
 
-            # start mini-batch
+            # start epoch
             with tqdm(range(n_batch), total=n_batch) as pbar:
                 for b in pbar:
                     # batch sampling
@@ -84,6 +84,20 @@ class BaseTrainer:
 
                     # compute loss
                     loss = self.criterion(embeddings_dict, batch, self.column_names)
+
+                    # adding loss for domain adaptation
+                    if self.model.user_adaptor is not None:
+                        loss += self.model.user_adaptor(
+                            users, embeddings_dict["user_embedding"]
+                        )
+                    if self.model.item_adaptor is not None:
+                        loss += self.model.item_adaptor(
+                            pos_items, embeddings_dict["pos_item_embedding"]
+                        )
+                        loss += self.model.item_adaptor(
+                            neg_items, embeddings_dict["neg_item_embedding"]
+                        )
+
                     accum_loss += loss.item()
 
                     # gradient of loss

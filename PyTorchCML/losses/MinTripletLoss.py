@@ -11,10 +11,10 @@ class MinTripletLoss(BaseLoss):
         self.margin = margin
         self.ReLU = nn.ReLU()
 
-    def forward(
+    def main(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forwarding loss
+        """Method of forwarding main loss
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
@@ -41,6 +41,5 @@ class MinTripletLoss(BaseLoss):
         pairwiseloss = self.ReLU(self.margin + pos_dist ** 2 - min_neg_dist.values ** 2)
 
         loss = torch.mean(pairwiseloss)
-        reg = self.regularize(embeddings_dict)
 
-        return loss + reg
+        return loss
