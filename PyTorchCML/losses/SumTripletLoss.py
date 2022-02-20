@@ -1,23 +1,26 @@
 import torch
+from torch import nn
 
-from .BaseTripletLoss import BaseTripletLoss
+from .BaseLoss import BaseLoss
 
 
-class SumTripletLoss(BaseTripletLoss):
+class SumTripletLoss(BaseLoss):
     """Class of Triplet Loss taking sum of negative sample."""
 
     def __init__(self, margin: float = 1, regularizers: list = []):
-        super().__init__(margin, regularizers)
+        super().__init__(regularizers)
+        self.margin = margin
+        self.ReLU = nn.ReLU()
 
-    def forward(
+    def main(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forwarding loss
+        """Method of forwarding main loss
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values
-                user_embedding : embeddings of user, size (n_batch, d)
-                pos_item_embedding : embeddings of positive item, size (n_batch, d)
+                user_embedding : embeddings of user, size (n_batch, 1, d)
+                pos_item_embedding : embeddings of positive item, size (n_batch, 1, d)
                 neg_item_embedding : embeddings of negative item, size (n_batch, n_neg_samples, d)
 
             batch (torch.Tensor) : A tensor of batch, size (n_batch, *).
@@ -36,6 +39,5 @@ class SumTripletLoss(BaseTripletLoss):
 
         tripletloss = self.ReLU(self.margin + pos_dist ** 2 - neg_dist ** 2)
         loss = torch.mean(tripletloss)
-        reg = self.regularize(embeddings_dict)
 
-        return loss + reg
+        return loss

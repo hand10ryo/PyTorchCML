@@ -29,8 +29,8 @@ class TestLogitPairwiseLoss(unittest.TestCase):
         avg_loss = 5.5
         """
         embeddings_dict = {
-            "user_embedding": torch.ones(3, 5),
-            "pos_item_embedding": torch.ones(3, 5) * 2,
+            "user_embedding": torch.ones(3, 1, 5),
+            "pos_item_embedding": torch.ones(3, 1, 5) * 2,
             "neg_item_embedding": torch.ones(3, 2, 5),
             "user_bias": torch.zeros(3, 1),
             "pos_item_bias": torch.zeros(3, 1) * 2,

@@ -41,7 +41,7 @@ class TestTwoStageSampler(unittest.TestCase):
         self.assertGreaterEqual(5, item_id_max)
 
         # pairwise weighted sampler
-        pos_weight_pair = np.array([1, 1, 1, 1, 1, 100])
+        pos_weight_pair = np.array([1, 1, 1, 1, 1, 1000])
         sampler = TwoStageSampler(
             train_set,
             n_user=3,
@@ -57,7 +57,7 @@ class TestTwoStageSampler(unittest.TestCase):
         self.assertGreaterEqual(cnt_heavy, cnt_lignt)
 
         # item wise weighted sampler
-        pos_weight_item = np.array([1, 1, 1, 1, 100])
+        pos_weight_item = np.array([1, 1, 1, 1, 1000])
         sampler = TwoStageSampler(
             train_set,
             n_user=3,

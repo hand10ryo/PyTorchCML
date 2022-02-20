@@ -1,20 +1,20 @@
 import torch
 
-from .BasePairwiseLoss import BasePairwiseLoss
+from .BaseLoss import BaseLoss
 
 
-class MSEPairwiseLoss(BasePairwiseLoss):
+class MSEPairwiseLoss(BaseLoss):
     """Class of loss for MSE in implicit feedback"""
 
-    def forward(
+    def main(
         self, embeddings_dict: dict, batch: torch.Tensor, column_names: dict
     ) -> torch.Tensor:
-        """Method of forwarding loss
+        """Method of forwarding main loss
 
         Args:
             embeddings_dict (dict): A dictionary of embddings which has following key and values.
-                "user_embedding" : embeddings of user, size (n_batch, d)
-                "pos_item_embedding" : embeddings of positive item, size (n_batch, d)
+                "user_embedding" : embeddings of user, size (n_batch, 1, d)
+                "pos_item_embedding" : embeddings of positive item, size (n_batch, 1, d)
                 "neg_item_embedding" : embeddings of negative item, size (n_batch, n_neg_samples, d)
                 "user_bias" : bias of user, size (n_batch, 1)
                 "pos_item_bias" : bias of positive item, size (n_batch, 1)
@@ -32,13 +32,13 @@ class MSEPairwiseLoss(BasePairwiseLoss):
         n_pos = 1
 
         pos_inner = torch.einsum(
-            "nd,nd->n",
+            "nid,nid->n",
             embeddings_dict["user_embedding"],
             embeddings_dict["pos_item_embedding"],
         )
 
         neg_inner = torch.einsum(
-            "nd,njd->nj",
+            "nid,njd->nj",
             embeddings_dict["user_embedding"],
             embeddings_dict["neg_item_embedding"],
         )
@@ -53,6 +53,5 @@ class MSEPairwiseLoss(BasePairwiseLoss):
         neg_loss = (torch.sigmoid(neg_r_hat) ** 2).sum()
 
         loss = (pos_loss + neg_loss) / (n_batch * (n_pos + n_neg))
-        reg = self.regularize(embeddings_dict)
 
-        return loss + reg
+        return loss
