@@ -231,7 +231,7 @@ The adaptors is a module for realizing domain adaptation.
 
 Domain adaptation in CML is achieved by adding $L(v_i, \theta) = \|f(x_i;\theta)-v_i\|^2$ to the loss for feature $x_i$ of item  $i$. The same is true for the user. This allows us to reflect attribute information in the embedding vector.
 
-MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function $(x_i;\theta)$.
+MLPAdaptor is a class of adaptors that assumes a multilayer perceptron in function $f(x_i;\theta)$.
 
 You can set up the adaptor as shown in the code below
 
