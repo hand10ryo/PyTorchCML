@@ -255,14 +255,21 @@ model = models.CollaborativeMetricLearning(
 
 # Development
 
+Build develop enviroment as below. 
+
 ```bash
 pip install poetry
 pip install poetry-dynamic-versioning
 
 poetry install
 poetry build
-poetry lock
 ```
+
+Follow the gitflow procedure for development.
+Develop detailed features by deriving feature/xxx branches from the develop branch.
+Each time you push, the github workflow will run a unitest.
+Send a pull request to the develop branch when a series of feature development is finished.
+
 
 # Citation
 
