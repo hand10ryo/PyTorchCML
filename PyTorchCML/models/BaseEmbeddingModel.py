@@ -129,7 +129,6 @@ class BaseEmbeddingModel(nn.Module):
 
         Returns:
             pd.DataFrame: dataframe of topk items for each user which columns are ["user", "item", "score"]
-            torch.Tensor: Tensor of item scores size (n, n_item)
         """
 
         batches = torch.split(users, num_batch)
