@@ -1,0 +1,10 @@
+{
+    "name": "PyTorchCML",
+    "dockerComposeFile": "docker-compose.yml",
+    "extensions": [
+        "ms-python.python",
+    ],
+    "service": "python",
+    "workspaceFolder": "/work",
+    "shutdownAction": "stopCompose"
+}
