@@ -128,6 +128,7 @@ class BaseEmbeddingModel(nn.Module):
             n_job : number of using process.
 
         Returns:
+            pd.DataFrame: dataframe of topk items for each user which columns are ["user", "item", "score"]
             torch.Tensor: Tensor of item scores size (n, n_item)
         """
 
