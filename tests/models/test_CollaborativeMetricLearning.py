@@ -64,3 +64,21 @@ class TestCollaborativeMetricLearning(unittest.TestCase):
         # y_hat shape
         shape = so_dist.shape
         self.assertEqual(shape, torch.Size([2, 3]))
+
+    def test_get_topk_items(self):
+        n_user = 1000
+        k = 3
+
+        model = CollaborativeMetricLearning(
+            n_user=n_user,
+            n_item=100,
+            n_dim=10,
+        )
+
+        users = torch.LongTensor(torch.arange(n_user))
+        topk_items_df = model.get_topk_items(users, k=k)
+        n_items_per_user = topk_items_df.groupby("user")["item"].count().mean()
+        n, m = topk_items_df.shape
+        self.assertEqual(n, n_user * k)
+        self.assertEqual(m, 3)
+        self.assertEqual(n_items_per_user, k)
