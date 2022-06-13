@@ -3,6 +3,10 @@ from typing import Optional
 import torch
 from torch import nn
 
+import pandas as pd
+from joblib import Parallel, delayed
+from tqdm import tqdm
+
 from ..adaptors import BaseAdaptor
 
 
@@ -44,7 +48,8 @@ class BaseEmbeddingModel(nn.Module):
             )
 
         else:
-            self.user_embedding = nn.Embedding.from_pretrained(user_embedding_init)
+            self.user_embedding = nn.Embedding.from_pretrained(
+                user_embedding_init)
             self.user_embedding.weight.requires_grad = True
 
         if item_embedding_init is None:
@@ -52,7 +57,8 @@ class BaseEmbeddingModel(nn.Module):
                 n_item, n_dim, sparse=False, max_norm=max_norm
             )
         else:
-            self.item_embedding = nn.Embedding.from_pretrained(item_embedding_init)
+            self.item_embedding = nn.Embedding.from_pretrained(
+                item_embedding_init)
             self.item_embedding.weight.requires_grad = True
 
     def forward(
@@ -112,3 +118,40 @@ class BaseEmbeddingModel(nn.Module):
             torch.Tensor: Tensor of weight size (n, n_item)
         """
         raise NotImplementedError
+
+    def get_topk_items(self, users: torch.Tensor, k: int, num_batch: int = 100, n_jobs: int = -1):
+        """Method of getting top k items for for each user.
+        Args:
+            users (torch.Tensor): 1d tensor of user_id size (n).
+            k : number of top items.
+            num_batch : number of users for a batch.
+            n_job : number of using process.
+
+        Returns:
+            pd.DataFrame: dataframe of topk items for each user which columns are ["user", "item", "score"]
+        """
+
+        batches = torch.split(users, num_batch)
+        inputs = tqdm(batches)
+        items = torch.LongTensor(torch.arange(self.n_item))
+
+        def predict_user(i, batch_users, k):
+            users_expand = batch_users.expand(self.n_item, -1).T.reshape(-1, 1)
+            items_expand = items.expand(len(batch_users), -1).reshape(-1, 1)
+            pairs_tensor = torch.cat([users_expand, items_expand], axis=1)
+            pairs_array = pairs_tensor.cpu().detach().numpy()
+            pairs_df = pd.DataFrame(pairs_array, columns=['user', 'item'])
+            score_tensor = self.predict(pairs_tensor)
+            pairs_df['score'] = score_tensor.cpu().detach().numpy()
+            pairs_df = pairs_df.sort_values(
+                by=["user", "score"], ascending=[True, False])
+            topk_pairs = pairs_df.groupby("user").head(k)
+            return i, topk_pairs
+
+        scored = Parallel(n_jobs=n_jobs)(
+            delayed(predict_user)(i, batch_users=batch_users, k=k)
+            for i, batch_users in enumerate(inputs)
+        )
+        scored = sorted(scored, key=lambda x: x[0])
+        scored = [s[1] for s in scored]
+        return pd.concat(scored, axis=0)

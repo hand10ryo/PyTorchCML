@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  python:
+    build: .
+    volumes:
+      - ../:/work
+    command: sleep infinity
+
+# chmod 777 ./work/build && .work/build.sh &&
