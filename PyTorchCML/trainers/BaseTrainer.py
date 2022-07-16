@@ -4,7 +4,7 @@ from torch import optim
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ..evaluators import BaseEvaluator
 from ..losses import BaseLoss
@@ -66,13 +66,17 @@ class BaseTrainer:
                 for b in pbar:
                     # batch sampling
                     batch = self.sampler.get_pos_batch()
-                    users = batch[:, self.column_names["user_id"]].reshape(-1, 1)
-                    pos_items = batch[:, self.column_names["item_id"]].reshape(-1, 1)
+                    users = batch[:, self.column_names["user_id"]
+                                  ].reshape(-1, 1)
+                    pos_items = batch[:,
+                                      self.column_names["item_id"]].reshape(-1, 1)
 
                     if self.sampler.two_stage:
                         neg_candidates = self.sampler.get_and_set_candidates()
-                        dist = self.model.spreadout_distance(pos_items, neg_candidates)
-                        self.sampler.set_candidates_weight(dist, self.model.n_dim)
+                        dist = self.model.spreadout_distance(
+                            pos_items, neg_candidates)
+                        self.sampler.set_candidates_weight(
+                            dist, self.model.n_dim)
 
                     neg_items = self.sampler.get_neg_batch(users.reshape(-1))
 
@@ -83,7 +87,8 @@ class BaseTrainer:
                     embeddings_dict = self.model(users, pos_items, neg_items)
 
                     # compute loss
-                    loss = self.criterion(embeddings_dict, batch, self.column_names)
+                    loss = self.criterion(
+                        embeddings_dict, batch, self.column_names)
 
                     # adding loss for domain adaptation
                     if self.model.user_adaptor is not None:
@@ -117,4 +122,5 @@ class BaseTrainer:
                 valid_scores_sub = valid_evaluator.score(self.model)
                 valid_scores_sub["epoch"] = ep + 1
                 valid_scores_sub["loss"] = accum_loss / n_batch
-                self.valid_scores = pd.concat([self.valid_scores, valid_scores_sub])
+                self.valid_scores = pd.concat(
+                    [self.valid_scores, valid_scores_sub])

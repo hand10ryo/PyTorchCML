@@ -62,7 +62,8 @@ class BaseSampler:
         neutral_cpu = neutral.cpu()
         not_negative = torch.cat([train_set_cpu, neutral_cpu])
         self.not_negative_flag = csr_matrix(
-            (np.ones(not_negative.shape[0]), (not_negative[:, 0], not_negative[:, 1])),
+            (np.ones(not_negative.shape[0]),
+             (not_negative[:, 0], not_negative[:, 1])),
             [n_user, n_item],
         )
         self.not_negative_flag.sum_duplicates()
@@ -70,7 +71,8 @@ class BaseSampler:
 
         # device
         if device is None:
-            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            self.device = torch.device(
+                "cuda:0" if torch.cuda.is_available() else "cpu")
         else:
             self.device = device
 
@@ -86,7 +88,8 @@ class BaseSampler:
                 pos_weight_pair = pos_weight[train_set[:, 0].cpu()]
 
             else:
-                raise NotImplementedError
+                raise ValueError(
+                    "The length of pos_weight does not match any of n_user, n_item, or n_positive_pair.")
 
         else:  # uniform
             pos_weight_pair = torch.ones(train_set.shape[0])
@@ -108,7 +111,8 @@ class BaseSampler:
             self.neg_item_weight = torch.Tensor(neg_weight).to(self.device)
 
         else:
-            raise NotImplementedError
+            raise ValueError(
+                "The length of neg_weight does not match any of n_user or n_item.")
 
     def get_pos_batch(self) -> torch.Tensor:
         """Method for positive sampling.
@@ -152,6 +156,7 @@ class BaseSampler:
 
         else:
             neg_sampler = Categorical(probs=self.neg_item_weight)
-            neg_samples = neg_sampler.sample([self.batch_size, self.n_neg_samples])
+            neg_samples = neg_sampler.sample(
+                [self.batch_size, self.n_neg_samples])
 
         return neg_samples
